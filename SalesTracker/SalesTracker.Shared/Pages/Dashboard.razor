@@ -2,25 +2,29 @@
 @inject DashboardService DashboardService
 @inject OrderService OrderService
 @inject ItemService ItemService
+@inject DemoDataService DemoDataService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
 <PageTitle>Dashboard</PageTitle>
 
 <div class="dashboard-container">
-    <div class="dashboard-header">
-        <h1>Dashboard</h1>
-        <div class="search-section">
-            <div class="search-box">
-                <InputText class="search-input" placeholder="Search..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
-                <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.397h-.001c.003-.003.006-.006.009-.009l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.009-.009zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                    </svg>
-                </button>
-            </div>
+<div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <div class="search-section">
+        <div class="search-box">
+            <InputText class="search-input" placeholder="Search..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+            <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.397h-.001c.003-.003.006-.006.009-.009l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.009-.009zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+            </button>
         </div>
+        <button class="btn btn-secondary" @onclick="CreateDemoData" title="Create Demo Data">
+            Create Demo Data
+        </button>
     </div>
+</div>
 
     @if (IsLoading)
     {
@@ -278,6 +282,33 @@
     {
         // Search functionality can be implemented to filter orders or items
         // For now, navigation to sales or items page can be added
+    }
+
+    private async Task CreateDemoData()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = string.Empty;
+
+            await DemoDataService.CreateDemoDataAsync();
+
+            // Reload the dashboard data
+            await Task.WhenAll(
+                LoadSalesMetrics(),
+                LoadProfitMetrics(),
+                LoadOperationalMetrics(),
+                LoadBackorderedItems(),
+                LoadDailySalesData()
+            );
+
+            IsLoading = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to create demo data: {ex.Message}";
+            IsLoading = false;
+        }
     }
 
     private async Task RenderSalesChart()

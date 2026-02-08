@@ -18,5 +18,6 @@ builder.Services.AddSingleton<IDataStore<ItemImage>, IndexedDbDataStore<ItemImag
 builder.Services.AddSingleton<ItemService>();
 builder.Services.AddSingleton<OrderService>();
 builder.Services.AddSingleton<DashboardService>();
+builder.Services.AddSingleton<DemoDataService>();
 
 await builder.Build().RunAsync();

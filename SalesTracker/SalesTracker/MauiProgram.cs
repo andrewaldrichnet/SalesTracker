@@ -35,6 +35,7 @@ namespace SalesTracker
             builder.Services.AddSingleton<ItemService>();
             builder.Services.AddSingleton<OrderService>();
             builder.Services.AddSingleton<DashboardService>();
+            builder.Services.AddSingleton<DemoDataService>();
 
             builder.Services.AddMauiBlazorWebView();
 
