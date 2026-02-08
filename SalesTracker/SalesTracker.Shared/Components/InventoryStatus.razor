@@ -1,0 +1,39 @@
+@using SalesTracker.Shared.Models
+
+<div class="inventory-status">
+    @if (IsSold)
+    {
+        <span class="sold-qty">Sold: @SoldQty</span>
+    }
+    else if (IsBackordered)
+    {
+        <span class="badge bg-danger">Back-ordered</span>
+    }
+    else if (AvailableQty > 0)
+    {
+        <span class="inventory-count">@AvailableQty in stock</span>
+    }
+    else
+    {
+        <span class="badge bg-secondary">Out of stock</span>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int? AllocatedQty { get; set; }
+
+    [Parameter]
+    public int? CurrentQty { get; set; }
+
+    [Parameter]
+    public int? AvailableQty { get; set; }
+
+    [Parameter]
+    public int? SoldQty { get; set; }
+
+    [Parameter]
+    public bool IsSold { get; set; } = false;
+
+    private bool IsBackordered => !IsSold && AllocatedQty.HasValue && CurrentQty.HasValue && AllocatedQty > CurrentQty;
+}

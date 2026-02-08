@@ -5,12 +5,12 @@
 
 <PageTitle>Sales</PageTitle>
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Sales</h1>
-        <a href="/sales/setup" class="btn btn-primary">New Sale</a>
+<div class="view-sales-container">
+    <div class="sales-header">
+        <h2>Sales</h2>
+        <a href="/sales/setup" class="btn btn-primary btn-lg">New Sale</a>
     </div>
-    
+
     @if (IsLoading)
     {
         <p>Loading sales...</p>
@@ -27,80 +27,75 @@
     }
     else
     {
-        <div class="mb-3">
-            <InputText class="form-control" placeholder="Search by customer name..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+        <div class="search-section">
+            <div class="search-box">
+                <InputText class="search-input" placeholder="Search by customer name..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+                <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.397h-.001c.003-.003.006-.006.009-.009l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.009-.009zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
-        
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Item</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                    <th>Sale Date</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Orders)
-                {
-                    var itemName = ItemNames.ContainsKey(order.ItemID) ? ItemNames[order.ItemID] : "Unknown";
-                    <tr>
-                        <td>@order.OrderID</td>
-                        <td>@order.CustomerName</td>
-                        <td>@itemName</td>
-                        <td>@order.Qty</td>
-                        <td>${order.Price:F2}</td>
-                        <td>${(order.Price * order.Qty):F2}</td>
-                        <td>@order.SellDate.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            <div class="d-flex gap-2 flex-wrap">
-                                @if (order.HasReceivedPayment)
-                                {
-                                    <span class="badge bg-success">Paid</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning">Unpaid</span>
-                                }
-                                
-                                @if (order.HasDelivered)
-                                {
-                                    <span class="badge bg-info">Delivered</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">Pending</span>
-                                }
-                            </div>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm" role="group">
-                                <a href="/sales/setup/@order.OrderID" class="btn btn-info">Edit</a>
-                                <button class="btn btn-danger" @onclick="() => HandleDelete(order.OrderID)">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+
+        <div class="filter-tabs">
+            <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")" 
+                    @onclick="() => SetFilter(FilterType.All)">
+                All Sales
+            </button>
+            <button class="filter-pill @(CurrentFilter == FilterType.PendingDelivery ? "active" : "")" 
+                    @onclick="() => SetFilter(FilterType.PendingDelivery)">
+                Pending Delivery
+            </button>
+            <button class="filter-pill @(CurrentFilter == FilterType.Unpaid ? "active" : "")" 
+                    @onclick="() => SetFilter(FilterType.Unpaid)">
+                Unpaid
+            </button>
+        </div>
+
+        <div class="orders-list">
+            @foreach (var order in FilteredOrders)
+            {
+                var item = Items.FirstOrDefault(i => i.ItemID == order.ItemID);
+                <OrderRow Order="order" Item="item" OnClick="HandleOrderClick" />
+            }
+        </div>
     }
 </div>
 
 <ConfirmationDialog @ref="ConfirmDialog" Title="Delete Order" Message="Are you sure you want to delete this order? This action cannot be undone." ConfirmText="Delete" CancelText="Cancel" />
 
 @code {
+    private enum FilterType
+    {
+        All,
+        PendingDelivery,
+        Unpaid
+    }
+
     private List<Order> Orders = new();
     private List<Order> AllOrders = new();
-    private Dictionary<int, string> ItemNames = new();
+    private List<Item> Items = new();
     private bool IsLoading = true;
     private string ErrorMessage = string.Empty;
     private string SearchTerm = string.Empty;
     private ConfirmationDialog? ConfirmDialog;
+    private FilterType CurrentFilter = FilterType.All;
+
+    private List<Order> FilteredOrders
+    {
+        get
+        {
+            var orders = Orders;
+
+            return CurrentFilter switch
+            {
+                FilterType.PendingDelivery => orders.Where(o => !o.HasDelivered).ToList(),
+                FilterType.Unpaid => orders.Where(o => !o.HasReceivedPayment).ToList(),
+                _ => orders
+            };
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,9 +111,8 @@
             AllOrders = await OrderService.GetAllOrdersAsync();
             Orders = AllOrders.OrderByDescending(o => o.SellDate).ToList();
             
-            // Load item names
-            var items = await ItemService.GetAllItemsAsync();
-            ItemNames = items.ToDictionary(i => i.ItemID, i => i.Name);
+            // Load items
+            Items = await ItemService.GetAllItemsAsync();
         }
         catch (Exception ex)
         {
@@ -141,6 +135,16 @@
             Orders = await OrderService.SearchByCustomerAsync(SearchTerm);
             Orders = Orders.OrderByDescending(o => o.SellDate).ToList();
         }
+    }
+
+    private void SetFilter(FilterType filter)
+    {
+        CurrentFilter = filter;
+    }
+
+    private void HandleOrderClick(Order order)
+    {
+        Navigation.NavigateTo($"/sales/setup/{order.OrderID}");
     }
 
     private async Task HandleDelete(int orderId)

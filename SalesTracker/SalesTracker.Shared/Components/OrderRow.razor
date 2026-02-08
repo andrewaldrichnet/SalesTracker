@@ -1,0 +1,101 @@
+@using SalesTracker.Shared.Models
+
+<div class="order-row" @onclick="HandleClick" style="cursor: pointer;">
+    <div class="order-row-image">
+        @if (Item?.Images?.Count > 0 && !string.IsNullOrEmpty(Item.Images[0].ImagePath))
+        {
+            <img src="@Item.Images[0].ImagePath" alt="@Item.Name" class="order-image" />
+        }
+        else
+        {
+            <div class="order-image-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M14.5 1a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-12A1.5 1.5 0 0 1 1.5 1h13zm-13-1A2.5 2.5 0 0 0-1 2.5v12A2.5 2.5 0 0 0 1.5 17h13a2.5 2.5 0 0 0 2.5-2.5v-12A2.5 2.5 0 0 0 14.5 0h-13z"/>
+                    <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 1 1-.708-.708L9.172 8 7.146 6.146a.5.5 0 1 1 .708-.708l3 3z"/>
+                </svg>
+            </div>
+        }
+    </div>
+
+    <div class="order-row-middle">
+        <div class="order-row-header">
+            <h5 class="order-customer">@Order.CustomerName</h5>
+            @if (!string.IsNullOrEmpty(StatusBadgeText))
+            {
+                <span class="@StatusBadgeClass">@StatusBadgeText</span>
+            }
+        </div>
+
+        <div class="order-row-meta">
+            <span class="order-date">@Order.SellDate.ToString("MMM dd, yyyy")</span>
+            <span class="order-separator">•</span>
+            <span class="order-item">@(Item?.Name ?? "Unknown Item")</span>
+        </div>
+    </div>
+
+    <div class="order-row-pricing-inventory">
+        <div class="price-stack">
+            <div class="order-price">
+                <span>$@Order.Price.ToString("F2")</span>
+            </div>
+            <InventoryStatus 
+                IsSold="Order.HasDelivered" 
+                SoldQty="Order.HasDelivered ? Order.Qty : null"
+                AllocatedQty="Order.HasDelivered ? null : Item?.AllocatedInventoryQty"
+                CurrentQty="Order.HasDelivered ? null : Item?.CurrentInventoryQty"
+                AvailableQty="Order.HasDelivered ? null : Item?.AvailableInventoryQty" />
+        </div>
+    </div>
+
+    <div class="order-row-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public required Order Order { get; set; }
+
+    [Parameter]
+    public Item? Item { get; set; }
+
+    [Parameter]
+    public EventCallback<Order> OnClick { get; set; }
+
+    private string StatusBadgeText => GetStatusBadgeText();
+    private string StatusBadgeClass => GetStatusBadgeClass();
+
+    private string GetStatusBadgeText()
+    {
+        // If delivered and paid, no badge
+        if (Order.HasDelivered && Order.HasReceivedPayment)
+            return string.Empty;
+
+        // If unpaid (regardless of delivery status)
+        if (!Order.HasReceivedPayment)
+            return "Unpaid";
+
+        // If pending delivery but paid
+        if (!Order.HasDelivered)
+            return "Pending";
+
+        return string.Empty;
+    }
+
+    private string GetStatusBadgeClass()
+    {
+        return StatusBadgeText switch
+        {
+            "Unpaid" => "badge bg-warning",
+            "Pending" => "badge bg-info",
+            _ => ""
+        };
+    }
+
+    private async Task HandleClick()
+    {
+        await OnClick.InvokeAsync(Order);
+    }
+}

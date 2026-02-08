@@ -38,20 +38,10 @@
                         <span class="text-muted">N/A</span>
                     }
                 </div>
-                <div class="inventory-status">
-                    @if (IsBackordered)
-                    {
-                        <span class="badge bg-danger">Back-ordered</span>
-                    }
-                    else if (Item.AvailableInventoryQty > 0)
-                    {
-                        <span class="inventory-count">@Item.AvailableInventoryQty in stock</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">Out of stock</span>
-                    }
-                </div>
+            <InventoryStatus 
+                AllocatedQty="Item.AllocatedInventoryQty"
+                CurrentQty="Item.CurrentInventoryQty"
+                AvailableQty="Item.AvailableInventoryQty" />
             </div>
         </div>
     </div>
