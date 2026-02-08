@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using SalesTracker.Data.Sqlite;
 using SalesTracker.Shared.Services;
 using SalesTracker.Web.Services;
 using SalesTracker.Web.Components;
@@ -10,6 +12,10 @@ builder.Services.AddRazorComponents()
 
 // Add device-specific services used by the SalesTracker.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
+
+var dbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "salestracker.db");
+builder.Services.AddDbContext<SalesTrackerDbContext>(options =>
+    options.UseSqlite($"Data Source={dbPath}"));
 
 var app = builder.Build();
 

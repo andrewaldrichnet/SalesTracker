@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using SalesTracker.Data.Sqlite;
 using SalesTracker.Services;
+using SalesTracker.Shared.Data;
+using SalesTracker.Shared.Models;
 using SalesTracker.Shared.Services;
 
 namespace SalesTracker
@@ -19,6 +23,16 @@ namespace SalesTracker
             // Add device-specific services used by the SalesTracker.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "salestracker.db");
+            builder.Services.AddDbContext<SalesTrackerDbContext>(options =>
+                options.UseSqlite($"Data Source={dbPath}"));
+            builder.Services.AddSingleton<IDataStore<Item>, SqliteDataStore<Item>>();
+            builder.Services.AddSingleton<IDataStore<Order>, SqliteDataStore<Order>>();
+            builder.Services.AddSingleton<IDataStore<ItemImage>, SqliteDataStore<ItemImage>>();
+            builder.Services.AddSingleton<ItemService>();
+            builder.Services.AddSingleton<OrderService>();
+            builder.Services.AddSingleton<DashboardService>();
+
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
@@ -26,7 +40,16 @@ namespace SalesTracker
             builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            var app = builder.Build();
+
+            // Initialize the database
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<SalesTrackerDbContext>();
+                dbContext.Database.EnsureCreated();
+            }
+
+            return app;
         }
     }
 }
