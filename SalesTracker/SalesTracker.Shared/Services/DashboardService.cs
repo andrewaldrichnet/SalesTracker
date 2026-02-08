@@ -168,4 +168,121 @@ public class DashboardService
 
         return (totalItems, lowStockCount, backorderedCount);
     }
+
+    /// <summary>
+    /// Gets daily sales for the current month
+    /// </summary>
+    public async Task<Dictionary<string, decimal>> GetDailySalesForCurrentMonthAsync()
+    {
+        var today = DateTime.UtcNow;
+        var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+        var orders = await _orderStore.QueryAsync(o =>
+            o.SellDate >= firstDayOfMonth && o.SellDate <= lastDayOfMonth);
+
+        var result = new Dictionary<string, decimal>();
+        
+        for (var date = firstDayOfMonth; date <= today && date <= lastDayOfMonth; date = date.AddDays(1))
+        {
+            var dateKey = date.ToString("yyyy-MM-dd");
+            var dailySales = orders
+                .Where(o => o.SellDate.Date == date.Date)
+                .Sum(o => o.Price * o.Qty);
+            result[dateKey] = dailySales;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets count of all orders for the current month
+    /// </summary>
+    public async Task<int> GetOrdersCountForCurrentMonthAsync()
+    {
+        var today = DateTime.UtcNow;
+        var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+        var orders = await _orderStore.QueryAsync(o =>
+            o.SellDate >= firstDayOfMonth && o.SellDate <= lastDayOfMonth);
+
+        return orders.Count;
+    }
+
+    /// <summary>
+    /// Gets items that are backordered with their details
+    /// </summary>
+    public async Task<List<(Item Item, int QtyNeeded)>> GetBackorderedItemsAsync()
+    {
+        var items = await _itemStore.QueryAsync(i =>
+            i.AllocatedInventoryQty > i.CurrentInventoryQty);
+
+        return items.Select(i => (i, i.AllocatedInventoryQty - i.CurrentInventoryQty)).ToList();
+    }
+
+    /// <summary>
+    /// Gets current month net profit
+    /// </summary>
+    public async Task<decimal> GetCurrentMonthNetProfitAsync()
+    {
+        var today = DateTime.UtcNow;
+        var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+        var orders = await _orderStore.QueryAsync(o =>
+            o.SellDate >= firstDayOfMonth && o.SellDate <= lastDayOfMonth);
+
+        var items = await _itemStore.GetAllAsync();
+        var itemDict = items.ToDictionary(i => i.ItemID);
+
+        return orders.Sum(o =>
+        {
+            if (itemDict.TryGetValue(o.ItemID, out var item))
+            {
+                return (o.Price - item.Cost) * o.Qty;
+            }
+            return 0;
+        });
+    }
+
+    /// <summary>
+    /// Gets previous month net profit
+    /// </summary>
+    public async Task<decimal> GetPreviousMonthNetProfitAsync()
+    {
+        var today = DateTime.UtcNow;
+        var firstDayOfCurrentMonth = new DateTime(today.Year, today.Month, 1);
+        var firstDayOfPreviousMonth = firstDayOfCurrentMonth.AddMonths(-1);
+        var lastDayOfPreviousMonth = firstDayOfCurrentMonth.AddDays(-1);
+
+        var orders = await _orderStore.QueryAsync(o =>
+            o.SellDate >= firstDayOfPreviousMonth && o.SellDate <= lastDayOfPreviousMonth);
+
+        var items = await _itemStore.GetAllAsync();
+        var itemDict = items.ToDictionary(i => i.ItemID);
+
+        return orders.Sum(o =>
+        {
+            if (itemDict.TryGetValue(o.ItemID, out var item))
+            {
+                return (o.Price - item.Cost) * o.Qty;
+            }
+            return 0;
+        });
+    }
+
+    /// <summary>
+    /// Gets month-over-month profit percentage change
+    /// </summary>
+    public async Task<decimal> GetMonthlyProfitPercentageChangeAsync()
+    {
+        var currentMonth = await GetCurrentMonthNetProfitAsync();
+        var previousMonth = await GetPreviousMonthNetProfitAsync();
+
+        if (previousMonth == 0)
+            return currentMonth > 0 ? 100 : 0;
+
+        return ((currentMonth - previousMonth) / previousMonth) * 100;
+    }
 }

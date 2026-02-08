@@ -12,11 +12,13 @@
     <link rel="stylesheet" href="SalesTracker.Web.styles.css" />
     <ImportMap />
     <link rel="icon" type="image/png" href="_content/SalesTracker.Shared/favicon.png" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <HeadOutlet @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
 </head>
 
 <body>
     <Routes @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
+    <script src="_content/SalesTracker.Shared/js/chart-init.js"></script>
     <script src="_content/SalesTracker.Web.Client/js/image-resizer.js"></script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>

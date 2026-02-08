@@ -1,43 +1,306 @@
 @page "/"
+@inject DashboardService DashboardService
+@inject OrderService OrderService
+@inject ItemService ItemService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Dashboard</PageTitle>
 
-<div class="container-fluid">
-    <h1>Dashboard</h1>
-    <p>This is a placeholder for the dashboard with key metrics.</p>
-    
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Total Sales This Month</h5>
-                    <p class="card-text">$0.00</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Net Profit</h5>
-                    <p class="card-text">$0.00</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Pending Deliveries</h5>
-                    <p class="card-text">0</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Backordered Items</h5>
-                    <p class="card-text">0</p>
-                </div>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <div class="search-section">
+            <div class="search-box">
+                <InputText class="search-input" placeholder="Search..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+                <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.397h-.001c.003-.003.006-.006.009-.009l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.009-.009zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
+
+    @if (IsLoading)
+    {
+        <div class="loading-spinner">
+            <p>Loading dashboard data...</p>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+    else
+    {
+        <!-- Top Row: Sales Chart and New Sale Button + Metrics -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card sales-chart-card">
+                    <div class="card-header">
+                        <h5>Sales This Month</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <a href="/sales/setup" class="btn btn-primary btn-lg new-sale-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                    New Sale
+                </a>
+
+                <div class="metrics-row">
+                    <div class="metric-card sales-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Sales</span>
+                            <span class="metric-change @(SalesPercentageChange >= 0 ? "positive" : "negative")">
+                                @if (SalesPercentageChange >= 0)
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M8.5 4.5a.5.5 0 0 0-1 0v3.362l-1.146-1.147a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 7.862V4.5z"/>
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M7.5 11.5a.5.5 0 0 1-1 0V8.137L5.354 9.293a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L7.5 8.137v3.363z"/>
+                                    </svg>
+                                }
+                                @Math.Abs(SalesPercentageChange).ToString("F1")%
+                            </span>
+                        </div>
+                        <div class="metric-value">@CurrentMonthSales.ToString("C")</div>
+                    </div>
+
+                    <div class="metric-card profit-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Profit</span>
+                            <span class="metric-change @(ProfitPercentageChange >= 0 ? "positive" : "negative")">
+                                @if (ProfitPercentageChange >= 0)
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M8.5 4.5a.5.5 0 0 0-1 0v3.362l-1.146-1.147a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 7.862V4.5z"/>
+                                    </svg>
+                                }
+                                else
+                                {
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                        <path d="M7.5 11.5a.5.5 0 0 1-1 0V8.137L5.354 9.293a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L7.5 8.137v3.363z"/>
+                                    </svg>
+                                }
+                                @Math.Abs(ProfitPercentageChange).ToString("F1")%
+                            </span>
+                        </div>
+                        <div class="metric-value">@CurrentMonthProfit.ToString("C")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Row: Stats Cards and Backorders -->
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <h6 class="stat-title">Pending Deliveries</h6>
+                            <div class="stat-number">@PendingDeliveries</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon items">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 14.5V7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A2.968 2.968 0 0 1 3 2.506V2.5zm1 .068V3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-.068A1 1 0 0 0 5.5 1h-2a1 1 0 0 0-1 .5z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <h6 class="stat-title"># of Items</h6>
+                            <div class="stat-number">@TotalItems</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon orders">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0V1.5A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0V1.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <h6 class="stat-title">Orders This Month</h6>
+                            <div class="stat-number">@OrdersThisMonth</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card backorders-card">
+                    <div class="card-header">
+                        <div class="backorders-header-content">
+                            <h5>Back-orders</h5>
+                            <span class="qty-label">Qty Needed</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (BackorderedItems.Count == 0)
+                        {
+                            <p class="no-data">No back-orders at this time.</p>
+                        }
+                        else
+                        {
+                            <div class="backorder-list">
+                                @foreach (var (item, qtyNeeded) in BackorderedItems)
+                                {
+                                    <div class="backorder-item">
+                                        <div class="item-image">
+                                            @if (item.Images.Any())
+                                            {
+                                                <img src="@item.Images[0].ImagePath" alt="@item.Name" />
+                                            }
+                                            else
+                                            {
+                                                <div class="placeholder-image">No Image</div>
+                                            }
+                                        </div>
+                                        <div class="item-details">
+                                            <span class="item-name">@item.Name</span>
+                                        </div>
+                                        <div class="item-qty">
+                                            <span class="badge badge-warning">@qtyNeeded</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+@code {
+    private bool IsLoading = true;
+    private string ErrorMessage = string.Empty;
+    private string SearchTerm = string.Empty;
+
+    private decimal CurrentMonthSales = 0m;
+    private decimal CurrentMonthProfit = 0m;
+    private decimal SalesPercentageChange = 0m;
+    private decimal ProfitPercentageChange = 0m;
+    private int PendingDeliveries = 0;
+    private int TotalItems = 0;
+    private int OrdersThisMonth = 0;
+    private List<(Item Item, int QtyNeeded)> BackorderedItems = new();
+
+    private Dictionary<string, decimal> DailySalesData = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Load all dashboard data in parallel
+            await Task.WhenAll(
+                LoadSalesMetrics(),
+                LoadProfitMetrics(),
+                LoadOperationalMetrics(),
+                LoadBackorderedItems(),
+                LoadDailySalesData()
+            );
+
+            IsLoading = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load dashboard: {ex.Message}";
+            IsLoading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !IsLoading && DailySalesData.Count > 0)
+        {
+            await RenderSalesChart();
+        }
+    }
+
+    private async Task LoadSalesMetrics()
+    {
+        CurrentMonthSales = await DashboardService.GetCurrentMonthSalesAsync();
+        SalesPercentageChange = await DashboardService.GetMonthlySalesPercentageChangeAsync();
+    }
+
+    private async Task LoadProfitMetrics()
+    {
+        CurrentMonthProfit = await DashboardService.GetCurrentMonthNetProfitAsync();
+        ProfitPercentageChange = await DashboardService.GetMonthlyProfitPercentageChangeAsync();
+    }
+
+    private async Task LoadOperationalMetrics()
+    {
+        PendingDeliveries = await DashboardService.GetPendingDeliveriesCountAsync();
+        OrdersThisMonth = await DashboardService.GetOrdersCountForCurrentMonthAsync();
+        
+        var items = await ItemService.GetAllItemsAsync();
+        TotalItems = items.Count;
+    }
+
+    private async Task LoadBackorderedItems()
+    {
+        BackorderedItems = await DashboardService.GetBackorderedItemsAsync();
+    }
+
+    private async Task LoadDailySalesData()
+    {
+        DailySalesData = await DashboardService.GetDailySalesForCurrentMonthAsync();
+    }
+
+    private void HandleSearch()
+    {
+        // Search functionality can be implemented to filter orders or items
+        // For now, navigation to sales or items page can be added
+    }
+
+    private async Task RenderSalesChart()
+    {
+        if (DailySalesData.Count == 0)
+            return;
+
+        var dates = DailySalesData.Keys.ToList();
+        var sales = DailySalesData.Values.ToList();
+
+        // Format dates for display (e.g., "1", "2", "3"... for day of month)
+        var labels = dates.Select(d => DateTime.Parse(d).Day.ToString()).ToList();
+
+        try
+        {
+            // This would require Chart.js library to be imported
+            // For now, we're setting up the data structure
+            // You'll need to add Chart.js to your HTML head
+            await JS.InvokeVoidAsync("renderSalesChart", "salesChart", labels, sales.Select(s => (double)s).ToList());
+        }
+        catch
+        {
+            // Chart.js not available or error rendering
+        }
+    }
+}
