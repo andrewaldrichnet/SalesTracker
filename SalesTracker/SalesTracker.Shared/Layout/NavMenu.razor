@@ -1,0 +1,54 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">SalesTracker2</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <div class="nav-item px-0">
+                <span class="bi bi-shop-nav-menu" aria-hidden="true"></span> Sales
+            </div>
+            <nav class="nav flex-column ps-3">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="sales/setup">
+                        <span class="bi bi-plus-circle-nav-menu" aria-hidden="true"></span> New Sale
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="sales/view">
+                        <span class="bi bi-eye-nav-menu" aria-hidden="true"></span> View Sales
+                    </NavLink>
+                </div>
+            </nav>
+        </div>
+
+        <div class="nav-item px-3">
+            <div class="nav-item px-0">
+                <span class="bi bi-box-nav-menu" aria-hidden="true"></span> Items
+            </div>
+            <nav class="nav flex-column ps-3">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="items/setup">
+                        <span class="bi bi-plus-circle-nav-menu" aria-hidden="true"></span> New Item
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="items/view">
+                        <span class="bi bi-eye-nav-menu" aria-hidden="true"></span> View Items
+                    </NavLink>
+                </div>
+            </nav>
+        </div>
+    </nav>
+</div>
+

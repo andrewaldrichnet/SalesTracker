@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SalesTracker/SalesTracker.Shared/SalesTracker.Shared.csproj" />
+  <Project Path="SalesTracker/SalesTracker.Web.Client/SalesTracker.Web.Client.csproj" />
+  <Project Path="SalesTracker/SalesTracker.Web/SalesTracker.Web.csproj" />
+  <Project Path="SalesTracker/SalesTracker/SalesTracker.csproj" />
+</Solution>

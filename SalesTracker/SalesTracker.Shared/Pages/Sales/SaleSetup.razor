@@ -1,0 +1,173 @@
+@page "/sales/setup"
+@page "/sales/setup/{id}"
+@inject OrderService OrderService
+@inject ItemService ItemService
+@inject NavigationManager Navigation
+
+<PageTitle>@(IsEditMode ? "Edit Sale" : "New Sale")</PageTitle>
+
+<div class="container">
+    <h1>@(IsEditMode ? "Edit Sale" : "New Sale")</h1>
+    <p>@(IsEditMode ? "Update the sale information below." : "Create a new sale by filling in the form below.")</p>
+    
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="alert alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+    
+    <form @onsubmit="HandleSubmit">
+        <div class="mb-3">
+            <label for="customerName" class="form-label">Customer Name *</label>
+            <input type="text" class="form-control" id="customerName" @bind="CurrentOrder.CustomerName" required />
+        </div>
+        
+        <div class="mb-3">
+            <label for="itemId" class="form-label">Item *</label>
+            <select class="form-select" id="itemId" @bind="CurrentOrder.ItemID" required>
+                <option selected disabled value="0">Select an item...</option>
+                @foreach (var item in AvailableItems)
+                {
+                    <option value="@item.ItemID">@item.Name (Available: @item.AvailableInventoryQty)</option>
+                }
+            </select>
+        </div>
+        
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity *</label>
+            <input type="number" class="form-control" id="quantity" @bind="CurrentOrder.Qty" required />
+        </div>
+        
+        <div class="mb-3">
+            <label for="price" class="form-label">Price *</label>
+            <input type="number" class="form-control" id="price" step="0.01" @bind="CurrentOrder.Price" required />
+        </div>
+        
+        <div class="mb-3">
+            <label for="saleDate" class="form-label">Sale Date *</label>
+            <input type="date" class="form-control" id="saleDate" @bind="SellDate" required />
+        </div>
+
+        @if (IsEditMode)
+        {
+            <div class="mb-3">
+                <label class="form-label">
+                    <input type="checkbox" @bind="CurrentOrder.HasReceivedPayment" />
+                    Payment Received
+                </label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    <input type="checkbox" @bind="CurrentOrder.HasDelivered" />
+                    Delivered
+                </label>
+            </div>
+
+            @if (CurrentOrder.HasDelivered)
+            {
+                <div class="mb-3">
+                    <label for="deliveryDate" class="form-label">Delivery Date</label>
+                    <input type="date" class="form-control" id="deliveryDate" @bind="DeliveryDate" />
+                </div>
+            }
+        }
+        
+        <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
+            @(IsSubmitting ? "Saving..." : (IsEditMode ? "Save Changes" : "Create Sale"))
+        </button>
+        <a href="/sales/view" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private Order CurrentOrder = new();
+    private List<Item> AvailableItems = new();
+    private bool IsEditMode => !string.IsNullOrEmpty(Id);
+    private bool IsSubmitting = false;
+    private string ErrorMessage = string.Empty;
+    private string SuccessMessage = string.Empty;
+    private DateTime SellDate = DateTime.UtcNow;
+    private DateTime DeliveryDate = DateTime.UtcNow;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            AvailableItems = await ItemService.GetAllItemsAsync();
+
+            if (IsEditMode && int.TryParse(Id, out var orderId))
+            {
+                var order = await OrderService.GetOrderByIdAsync(orderId);
+                if (order != null)
+                {
+                    CurrentOrder = order;
+                    SellDate = CurrentOrder.SellDate;
+                    if (CurrentOrder.DeliveryDate.HasValue)
+                        DeliveryDate = CurrentOrder.DeliveryDate.Value;
+                }
+                else
+                {
+                    ErrorMessage = "Order not found.";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error loading form: {ex.Message}";
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+        IsSubmitting = true;
+
+        try
+        {
+            CurrentOrder.SellDate = SellDate;
+
+            if (DeliveryDate != DateTime.UtcNow && CurrentOrder.HasDelivered)
+            {
+                CurrentOrder.DeliveryDate = DeliveryDate;
+            }
+
+            if (IsEditMode)
+            {
+                await OrderService.UpdateOrderAsync(CurrentOrder);
+                SuccessMessage = "Order updated successfully!";
+            }
+            else
+            {
+                var newId = await OrderService.CreateOrderAsync(CurrentOrder);
+                SuccessMessage = "Order created successfully!";
+                CurrentOrder.OrderID = newId;
+            }
+
+            // Redirect after 1 second
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/sales/view");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+    }
+}
+

@@ -1,0 +1,59 @@
+@namespace SalesTracker.Shared.Components
+
+<div class="modal @(IsVisible ? "d-block" : "d-none")" style="@(IsVisible ? "background-color: rgba(0,0,0,0.5);" : "")" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Title</h5>
+            </div>
+            <div class="modal-body">
+                @Message
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="OnCancel">@CancelText</button>
+                <button type="button" class="btn btn-danger" @onclick="OnConfirm">@ConfirmText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Confirm";
+
+    [Parameter]
+    public string Message { get; set; } = "Are you sure?";
+
+    [Parameter]
+    public string ConfirmText { get; set; } = "Confirm";
+
+    [Parameter]
+    public string CancelText { get; set; } = "Cancel";
+
+    [Parameter]
+    public EventCallback<bool> OnResult { get; set; }
+
+    private bool IsVisible = false;
+    private TaskCompletionSource<bool>? _completionSource;
+
+    public async Task<bool> ShowAsync()
+    {
+        IsVisible = true;
+        _completionSource = new TaskCompletionSource<bool>();
+        var result = await _completionSource.Task;
+        IsVisible = false;
+        return result;
+    }
+
+    private async Task OnConfirm()
+    {
+        _completionSource?.SetResult(true);
+        await OnResult.InvokeAsync(true);
+    }
+
+    private async Task OnCancel()
+    {
+        _completionSource?.SetResult(false);
+        await OnResult.InvokeAsync(false);
+    }
+}

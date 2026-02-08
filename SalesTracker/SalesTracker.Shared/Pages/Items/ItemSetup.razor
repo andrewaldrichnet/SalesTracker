@@ -1,0 +1,129 @@
+@page "/items/setup"
+@page "/items/setup/{id}"
+@inject ItemService ItemService
+@inject NavigationManager Navigation
+
+<PageTitle>@(IsEditMode ? "Edit Item" : "New Item")</PageTitle>
+
+<div class="container">
+    <h1>@(IsEditMode ? "Edit Item" : "New Item")</h1>
+    <p>@(IsEditMode ? "Update the item information below." : "Create a new item by filling in the form below.")</p>
+    
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ErrorMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="alert alert-success" role="alert">
+            @SuccessMessage
+        </div>
+    }
+    
+    <form @onsubmit="HandleSubmit">
+        <div class="mb-3">
+            <label for="itemId" class="form-label">Item ID</label>
+            <input type="text" class="form-control" id="itemId" @bind="CurrentItem.ItemID" @(IsEditMode ? "disabled" : "") />
+        </div>
+        
+        <div class="mb-3">
+            <label for="name" class="form-label">Name *</label>
+            <input type="text" class="form-control" id="name" @bind="CurrentItem.Name" required />
+        </div>
+        
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" rows="3" @bind="CurrentItem.Description"></textarea>
+        </div>
+        
+        <div class="mb-3">
+            <label for="cost" class="form-label">Cost *</label>
+            <input type="number" class="form-control" id="cost" step="0.01" @bind="CurrentItem.Cost" required />
+        </div>
+        
+        <div class="mb-3">
+            <label for="salePrice" class="form-label">Sale Price</label>
+            <input type="number" class="form-control" id="salePrice" step="0.01" @bind="CurrentItem.SalePrice" />
+        </div>
+        
+        <div class="mb-3">
+            <label for="inventory" class="form-label">@(IsEditMode ? "Current" : "Initial") Inventory Quantity</label>
+            <input type="number" class="form-control" id="inventory" @bind="CurrentItem.CurrentInventoryQty" />
+        </div>
+        
+        <div class="mb-3">
+            <label for="images" class="form-label">Images</label>
+            <input type="file" class="form-control" id="images" multiple accept="image/*" />
+        </div>
+        
+        <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
+            @(IsSubmitting ? "Saving..." : (IsEditMode ? "Save Changes" : "Create Item"))
+        </button>
+        <a href="/items/view" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    private Item CurrentItem = new();
+    private bool IsEditMode = false;
+    private bool IsSubmitting = false;
+    private string ErrorMessage = string.Empty;
+    private string SuccessMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Id) && int.TryParse(Id, out var itemId))
+        {
+            IsEditMode = true;
+            var item = await ItemService.GetItemByIdAsync(itemId);
+            if (item != null)
+            {
+                CurrentItem = item;
+            }
+            else
+            {
+                ErrorMessage = "Item not found.";
+            }
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+        IsSubmitting = true;
+
+        try
+        {
+            if (IsEditMode)
+            {
+                await ItemService.UpdateItemAsync(CurrentItem);
+                SuccessMessage = "Item updated successfully!";
+            }
+            else
+            {
+                var newId = await ItemService.CreateItemAsync(CurrentItem);
+                SuccessMessage = "Item created successfully!";
+                CurrentItem.ItemID = newId;
+            }
+
+            // Redirect after 1 second
+            await Task.Delay(1000);
+            Navigation.NavigateTo("/items/view");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
+    }
+}
