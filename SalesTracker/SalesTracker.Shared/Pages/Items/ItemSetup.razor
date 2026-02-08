@@ -1,7 +1,11 @@
 @page "/items/setup"
 @page "/items/setup/{id}"
+@using Microsoft.AspNetCore.Components.Forms
 @inject ItemService ItemService
 @inject NavigationManager Navigation
+@inject IImageCaptureService ImageCaptureService
+@inject IImageStorageService ImageStorageService
+@inject IImageProcessingService ImageProcessingService
 
 <PageTitle>@(IsEditMode ? "Edit Item" : "New Item")</PageTitle>
 
@@ -56,7 +60,22 @@
         
         <div class="mb-3">
             <label for="images" class="form-label">Images</label>
-            <input type="file" class="form-control" id="images" multiple accept="image/*" />
+            <div class="input-group">
+                <InputFile id="images" onchange="HandleFileSelected" multiple accept="image/*" class="form-control" />
+                @if (ImageCaptureService.SupportsCamera)
+                {
+                    <button type="button" class="btn btn-outline-secondary" @onclick="HandleCameraCapture" title="Take a photo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z"/>
+                            <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
+                        </svg>
+                    </button>
+                }
+            </div>
+            @if (SelectedFiles.Count > 0)
+            {
+                <small class="text-muted d-block mt-2">@SelectedFiles.Count file(s) selected for upload</small>
+            }
         </div>
         
         <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
@@ -67,14 +86,15 @@
 </div>
 
 @code {
-    [Parameter]
-    public string? Id { get; set; }
+[Parameter]
+public string? Id { get; set; }
 
-    private Item CurrentItem = new();
-    private bool IsEditMode = false;
-    private bool IsSubmitting = false;
-    private string ErrorMessage = string.Empty;
-    private string SuccessMessage = string.Empty;
+private Item CurrentItem = new();
+private bool IsEditMode = false;
+private bool IsSubmitting = false;
+private string ErrorMessage = string.Empty;
+private string SuccessMessage = string.Empty;
+private List<ItemImage> SelectedFiles = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,6 +113,94 @@
         }
     }
 
+    private async Task HandleCameraCapture()
+    {
+        try
+        {
+            System.Diagnostics.Debug.WriteLine("HandleCameraCapture called");
+            var photoPath = await ImageCaptureService.CapturePhotoAsync();
+            
+            System.Diagnostics.Debug.WriteLine($"Photo path returned: {photoPath}");
+            
+            if (string.IsNullOrEmpty(photoPath))
+            {
+                ErrorMessage = "Camera capture cancelled or failed. Check if camera permissions are granted.";
+                StateHasChanged();
+                return;
+            }
+
+            // Get file info
+            var fileInfo = new FileInfo(photoPath);
+            System.Diagnostics.Debug.WriteLine($"File exists: {fileInfo.Exists}, Size: {fileInfo.Length}");
+            
+            if (fileInfo.Length > 5242880) // 5 MB limit
+            {
+                ErrorMessage = "Photo file is too large. Maximum size is 5 MB.";
+                StateHasChanged();
+                return;
+            }
+
+            // Process the image
+            System.Diagnostics.Debug.WriteLine("Processing image...");
+            using var stream = File.OpenRead(photoPath);
+            var imagePath = await ImageProcessingService.ProcessImageToBase64Async(stream, fileInfo.Name, 400, 400);
+            
+            System.Diagnostics.Debug.WriteLine($"Image processed, path/URI length: {imagePath.Length}");
+            
+            // Store the actual file path from the camera capture
+            SelectedFiles.Add(new ItemImage
+            {
+                ImagePath = imagePath,
+                IsPrimary = SelectedFiles.Count == 0, // First image is primary
+                DisplayOrder = SelectedFiles.Count
+            });
+
+            System.Diagnostics.Debug.WriteLine("Image added to selected files");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error in HandleCameraCapture: {ex}");
+            ErrorMessage = $"Error capturing photo: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        SelectedFiles.Clear();
+        
+        foreach (var file in e.GetMultipleFiles())
+        {
+            if (file.Size > 5242880) // 5 MB limit
+            {
+                ErrorMessage = $"File {file.Name} is too large. Maximum size is 5 MB.";
+                continue;
+            }
+
+            try
+            {
+                // Process the image (resize and convert to base64/path)
+                using var stream = file.OpenReadStream(5242880);
+                var imagePath = await ImageProcessingService.ProcessImageToBase64Async(stream, file.Name, 400, 400);
+                
+                // Add to selected files list
+                SelectedFiles.Add(new ItemImage
+                {
+                    ImagePath = imagePath,
+                    IsPrimary = SelectedFiles.Count == 0, // First image is primary
+                    DisplayOrder = SelectedFiles.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error processing file: {ex.Message}";
+            }
+        }
+
+        StateHasChanged();
+    }
+
     private async Task HandleSubmit()
     {
         ErrorMessage = string.Empty;
@@ -101,6 +209,16 @@
 
         try
         {
+            // Add selected images to the item
+            foreach (var selectedFile in SelectedFiles)
+            {
+                // Only add if it's a new image (no ImageID means it's new)
+                if (selectedFile.ImageID == 0)
+                {
+                    CurrentItem.Images.Add(selectedFile);
+                }
+            }
+
             if (IsEditMode)
             {
                 await ItemService.UpdateItemAsync(CurrentItem);

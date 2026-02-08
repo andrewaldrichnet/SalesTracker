@@ -11,6 +11,8 @@ builder.Services.AddRazorComponents()
 
 // Add device-specific services used by the SalesTracker.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
+builder.Services.AddSingleton<IImageCaptureService, WebImageCaptureService>();
+builder.Services.AddSingleton<IImageStorageService, WebImageStorageService>();
 
 var app = builder.Build();
 

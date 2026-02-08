@@ -9,6 +9,9 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 // Add device-specific services used by the SalesTracker.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
+builder.Services.AddSingleton<IImageCaptureService, WebImageCaptureService>();
+builder.Services.AddSingleton<IImageStorageService, WebAssemblyImageStorageService>();
+builder.Services.AddSingleton<IImageProcessingService, WebAssemblyImageProcessingService>();
 builder.Services.AddSingleton<IDataStore<Item>, IndexedDbDataStore<Item>>();
 builder.Services.AddSingleton<IDataStore<Order>, IndexedDbDataStore<Order>>();
 builder.Services.AddSingleton<IDataStore<ItemImage>, IndexedDbDataStore<ItemImage>>();

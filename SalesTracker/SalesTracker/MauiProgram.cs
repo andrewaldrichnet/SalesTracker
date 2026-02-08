@@ -22,6 +22,9 @@ namespace SalesTracker
 
             // Add device-specific services used by the SalesTracker.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
+            builder.Services.AddSingleton<IImageCaptureService, MauiImageCaptureService>();
+            builder.Services.AddSingleton<IImageStorageService, MauiImageStorageService>();
+            builder.Services.AddSingleton<IImageProcessingService, MauiImageProcessingService>();
 
             var dbPath = Path.Combine(FileSystem.AppDataDirectory, "salestracker.db");
             builder.Services.AddDbContext<SalesTrackerDbContext>(options =>
