@@ -9,20 +9,17 @@
 <PageTitle>Dashboard</PageTitle>
 
 <div class="dashboard-container">
-<div class="dashboard-header">
-    <h1>Dashboard</h1>
+<div class="dashboard-header d-flex justify-content-between">
+    <h1>Dashboard</h1>   
     <div class="search-section">
-        <div class="search-box">
-            <InputText class="search-input" placeholder="Search..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+        <div class="search-box d-flex gap-3" style="max-width: 800px;">
+            <InputText class="search-input form-control" placeholder="Search..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
             <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.397h-.001c.003-.003.006-.006.009-.009l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.009-.009zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                 </svg>
             </button>
         </div>
-        <button class="btn btn-secondary" @onclick="CreateDemoData" title="Create Demo Data">
-            Create Demo Data
-        </button>
     </div>
 </div>
 
@@ -41,73 +38,77 @@
     else
     {
         <!-- Top Row: Sales Chart and New Sale Button + Metrics -->
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card sales-chart-card">
-                    <div class="card-header">
-                        <h5>Sales This Month</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="salesChart"></canvas>
-                    </div>
-                </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="card shadow-lg"><div class="card-body"><canvas id="salesChart"></canvas></div></div>
             </div>
 
-            <div class="col-lg-4">
-                <a href="/sales/setup" class="btn btn-primary btn-lg new-sale-btn">
+            <div class="col-md-6">
+                <a href="/sales/setup" class="btn btn-primary btn-lg new-sale-btn w-100">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>
                     New Sale
                 </a>
 
-                <div class="metrics-row">
-                    <div class="metric-card sales-card">
-                        <div class="metric-header">
-                            <span class="metric-label">Sales</span>
-                            <span class="metric-change @(SalesPercentageChange >= 0 ? "positive" : "negative")">
-                                @if (SalesPercentageChange >= 0)
-                                {
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path d="M8.5 4.5a.5.5 0 0 0-1 0v3.362l-1.146-1.147a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 7.862V4.5z"/>
-                                    </svg>
-                                }
-                                else
-                                {
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path d="M7.5 11.5a.5.5 0 0 1-1 0V8.137L5.354 9.293a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L7.5 8.137v3.363z"/>
-                                    </svg>
-                                }
-                                @Math.Abs(SalesPercentageChange).ToString("F1")%
-                            </span>
+                <div class="metrics-row row mt-3">
+                    <div class="col-6">
+                        <div class="metric-card card me-1 rounded-3 shadow-lg">
+                            <div class="card-body py-4 my-3 d-flex">
+                                <div class="m-auto d-inline-block">
+                                    <div class="metric-header mb-1">
+                                        <span class="metric-change @(SalesPercentageChange >= 0 ? "positive" : "negative")">
+                                            @if (SalesPercentageChange >= 0)
+                                            {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                <path d="M8.5 4.5a.5.5 0 0 0-1 0v3.362l-1.146-1.147a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 7.862V4.5z" />
+                                            </svg>
+                                            }
+                                            else
+                                            {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                <path d="M7.5 11.5a.5.5 0 0 1-1 0V8.137L5.354 9.293a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L7.5 8.137v3.363z" />
+                                            </svg>
+                                            }
+                                            @Math.Abs(SalesPercentageChange).ToString("F1")%
+                                        </span>
+                                    </div>
+                                    <div class="metric-value fs-2 text-center fw-bold">@CurrentMonthSales.ToString("C")</div>
+                                    <div class="metric-label fs-4 text-center">Sales</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="metric-value">@CurrentMonthSales.ToString("C")</div>
                     </div>
-
-                    <div class="metric-card profit-card">
-                        <div class="metric-header">
-                            <span class="metric-label">Profit</span>
-                            <span class="metric-change @(ProfitPercentageChange >= 0 ? "positive" : "negative")">
-                                @if (ProfitPercentageChange >= 0)
-                                {
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path d="M8.5 4.5a.5.5 0 0 0-1 0v3.362l-1.146-1.147a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 7.862V4.5z"/>
-                                    </svg>
-                                }
-                                else
-                                {
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path d="M7.5 11.5a.5.5 0 0 1-1 0V8.137L5.354 9.293a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L7.5 8.137v3.363z"/>
-                                    </svg>
-                                }
-                                @Math.Abs(ProfitPercentageChange).ToString("F1")%
-                            </span>
+                    <div class=" col-6">
+                        <div class="metric-card card ms-1  rounded-3 shadow-lg">
+                                 <div class="card-body py-4 my-3 d-flex">
+                                 <div class="m-auto d-inline-block">
+                                    <div class="metric-header mb-1">
+                                        <span class="metric-change @(ProfitPercentageChange >= 0 ? "positive" : "negative")">
+                                            @if (ProfitPercentageChange >= 0)
+                                            {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                <path d="M8.5 4.5a.5.5 0 0 0-1 0v3.362l-1.146-1.147a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 7.862V4.5z" />
+                                            </svg>
+                                            }
+                                            else
+                                            {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                                <path d="M7.5 11.5a.5.5 0 0 1-1 0V8.137L5.354 9.293a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L7.5 8.137v3.363z" />
+                                            </svg>
+                                            }
+                                            @Math.Abs(ProfitPercentageChange).ToString("F1")%
+                                        </span>
+                                    </div>
+                                    <div class="metric-value fs-2 text-center fw-bold">@CurrentMonthProfit.ToString("C")</div>
+                                    <div class="metric-label fs-4 text-center">Profit</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="metric-value">@CurrentMonthProfit.ToString("C")</div>
                     </div>
                 </div>
             </div>
@@ -115,55 +116,77 @@
 
         <!-- Second Row: Stats Cards and Backorders -->
         <div class="row">
-            <div class="col-lg-4">
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-icon pending">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <h6 class="stat-title">Pending Deliveries</h6>
-                            <div class="stat-number">@PendingDeliveries</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon items">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 14.5V7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A2.968 2.968 0 0 1 3 2.506V2.5zm1 .068V3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-.068A1 1 0 0 0 5.5 1h-2a1 1 0 0 0-1 .5z"/>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <h6 class="stat-title"># of Items</h6>
-                            <div class="stat-number">@TotalItems</div>
+            <div class="col-lg-6">
+                <div class="stats-container d-flex gap-3">
+                    <div class="card shadow-lg flex-grow-1">
+                        <div class="card-body">
+                            <div class="d-flex flex-column gap-3">
+                                <div>
+                                    <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                        <div class="stat-icon pending">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-title fs-5">Pending Deliveries</div>
+                                    <div class="stat-number fs-1">@PendingDeliveries</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon orders">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0V1.5A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0V1.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
-                            </svg>
+                    <div class="card shadow-lg flex-grow-1">
+                        <div class="card-body">
+                            <div class="d-flex flex-column gap-3">
+                                <div>
+                                    <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                        <div class="stat-icon pending">
+                                           <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 14.5V7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A2.968 2.968 0 0 1 3 2.506V2.5zm1 .068V3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-.068A1 1 0 0 0 5.5 1h-2a1 1 0 0 0-1 .5z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-title fs-5"># of Items</div>
+                                    <div class="stat-number fs-1">@TotalItems</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-content">
-                            <h6 class="stat-title">Orders This Month</h6>
-                            <div class="stat-number">@OrdersThisMonth</div>
+                    </div>
+
+                    <div class="card shadow-lg flex-grow-1">
+                        <div class="card-body">
+                            <div class="d-flex flex-column gap-3">
+                                <div>
+                                    <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                        <div class="stat-icon pending">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                                                <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0V1.5A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0V1.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-title fs-5">Orders This Month</div>
+                                    <div class="stat-number fs-1">@OrdersThisMonth</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-8">
-                <div class="card backorders-card">
-                    <div class="card-header">
-                        <div class="backorders-header-content">
+            <div class="col-lg-6">
+                <div>
+                    <div class="d-flex justify-content-between">
                             <h5>Back-orders</h5>
                             <span class="qty-label">Qty Needed</span>
                         </div>
-                    </div>
-                    <div class="card-body">
+                    <div>
                         @if (BackorderedItems.Count == 0)
                         {
                             <p class="no-data">No back-orders at this time.</p>
@@ -173,7 +196,7 @@
                             <div class="backorder-list">
                                 @foreach (var (item, qtyNeeded) in BackorderedItems)
                                 {
-                                    <div class="backorder-item">
+                                    <div class="backorder-item d-flex gap-3">
                                         <div class="item-image">
                                             @if (item.Images.Any())
                                             {
@@ -181,14 +204,20 @@
                                             }
                                             else
                                             {
-                                                <div class="placeholder-image">No Image</div>
+                                                <div class="item-image-placeholder">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path d="M14.5 1a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-12A1.5 1.5 0 0 1 1.5 1h13zm-13-1A2.5 2.5 0 0 0-1 2.5v12A2.5 2.5 0 0 0 1.5 17h13a2.5 2.5 0 0 0 2.5-2.5v-12A2.5 2.5 0 0 0 14.5 0h-13z"/>
+                                                        <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 1 1-.708-.708L9.172 8 7.146 6.146a.5.5 0 1 1 .708-.708l3 3z"/>
+                                                    </svg>
+                                                </div>
                                             }
                                         </div>
                                         <div class="item-details">
                                             <span class="item-name">@item.Name</span>
                                         </div>
+                                        <div class="flex-grow-1"></div>
                                         <div class="item-qty">
-                                            <span class="badge badge-warning">@qtyNeeded</span>
+                                            <span class="badge badge-warning bg-light text-dark p-2">@qtyNeeded</span>
                                         </div>
                                     </div>
                                 }
@@ -198,6 +227,13 @@
                 </div>
             </div>
         </div>
+
+        <div class="mt-5">
+            
+        <button class="btn btn-secondary" @onclick="CreateDemoData" title="Create Demo Data">
+            Create Demo Data
+        </button>
+</div>
     }
 </div>
 
@@ -205,6 +241,7 @@
     private bool IsLoading = true;
     private string ErrorMessage = string.Empty;
     private string SearchTerm = string.Empty;
+    private bool renderedChart = false;
 
     private decimal CurrentMonthSales = 0m;
     private decimal CurrentMonthProfit = 0m;
@@ -241,7 +278,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !IsLoading && DailySalesData.Count > 0)
+        if (!renderedChart && !IsLoading && DailySalesData.Count > 0)
         {
             await RenderSalesChart();
         }
@@ -263,7 +300,7 @@
     {
         PendingDeliveries = await DashboardService.GetPendingDeliveriesCountAsync();
         OrdersThisMonth = await DashboardService.GetOrdersCountForCurrentMonthAsync();
-        
+
         var items = await ItemService.GetAllItemsAsync();
         TotalItems = items.Count;
     }
@@ -315,7 +352,7 @@
     {
         if (DailySalesData.Count == 0)
             return;
-
+        renderedChart = true;
         var dates = DailySalesData.Keys.ToList();
         var sales = DailySalesData.Values.ToList();
 

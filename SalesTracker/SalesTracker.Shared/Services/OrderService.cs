@@ -44,10 +44,6 @@ public class OrderService
         if (item == null)
             throw new InvalidOperationException($"Item with ID {order.ItemID} not found.");
 
-        if (item.AvailableInventoryQty < order.Qty)
-            throw new InvalidOperationException(
-                $"Insufficient inventory. Available: {item.AvailableInventoryQty}, Requested: {order.Qty}");
-
         // Set default price from item if not provided
         if (order.Price <= 0 && item.SalePrice.HasValue)
             order.Price = item.SalePrice.Value;

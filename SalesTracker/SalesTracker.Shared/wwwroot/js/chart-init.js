@@ -13,8 +13,8 @@ window.renderSalesChart = function(canvasId, labels, salesData) {
     }
 
     // Destroy existing chart if it exists
-    if (window.salesChart) {
-        window.salesChart.destroy();
+    if (window.mysalesChart) {
+        window.mysalesChart.destroy();
     }
 
     // Create gradient
@@ -23,7 +23,7 @@ window.renderSalesChart = function(canvasId, labels, salesData) {
     gradient.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
 
     // Create chart
-    window.salesChart = new Chart(ctx, {
+    window.mysalesChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
