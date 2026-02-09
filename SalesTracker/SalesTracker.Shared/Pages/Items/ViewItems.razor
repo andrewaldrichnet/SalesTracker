@@ -28,12 +28,10 @@
     else
     {
         <div class="search-section">
-            <div class="search-box">
-                <InputText class="search-input" placeholder="Search items..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+            <div class="search-box d-flex gap-3">
+                <InputText class="search-input form-control" placeholder="Search items..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
                 <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.397h-.001c.003-.003.006-.006.009-.009l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.009-.009zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                    </svg>
+                    <SearchIcon />
                 </button>
             </div>
         </div>
@@ -138,7 +136,7 @@
 
     private void HandleItemClick(Item item)
     {
-        Navigation.NavigateTo($"/items/setup/{item.ItemID}");
+        Navigation.NavigateTo($"/items/detail/{item.ItemID}");
     }
 
     private async Task HandleDelete(int itemId)

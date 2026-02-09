@@ -38,7 +38,7 @@ export async function initializeDatabase(dbName, version, storeNames) {
             storeNames.forEach(storeName => {
                 if (!db.objectStoreNames.contains(storeName)) {
                     const keyPath = storeName.charAt(0).toUpperCase() + storeName.slice(1) + 'ID';
-                    const store = db.createObjectStore(storeName, { keyPath: keyPath });
+                    const store = db.createObjectStore(storeName, { keyPath: keyPath, autoIncrement: true });
                     store.createIndex('createddate_idx', 'createddate', { unique: false });
                 }
             });
@@ -81,7 +81,7 @@ function openDatabase(dbName, version, storeName) {
             stores.forEach(name => {
                 if (!db.objectStoreNames.contains(name)) {
                     const keyPath = name.charAt(0).toUpperCase() + name.slice(1) + 'ID';
-                    const store = db.createObjectStore(name, { keyPath: keyPath });
+                    const store = db.createObjectStore(name, { keyPath: keyPath, autoIncrement: true });
                     store.createIndex('createddate_idx', 'createddate', { unique: false });
                 }
             });
@@ -151,6 +151,15 @@ export async function getById(dbName, version, storeName, id) {
 export async function add(dbName, version, storeName, jsonData) {
     const db = await openDatabase(dbName, version, storeName);
     const data = JSON.parse(jsonData);
+    
+    // Determine the key path for this store
+    const keyPath = storeName.charAt(0).toUpperCase() + storeName.slice(1) + 'ID';
+    
+    // If the data has a key property with a value of 0 or a default value, 
+    // delete it to allow auto-increment to work
+    if (data[keyPath] === 0 || data[keyPath] === undefined) {
+        delete data[keyPath];
+    }
     
     return new Promise((resolve, reject) => {
         const transaction = db.transaction([storeName], 'readwrite');

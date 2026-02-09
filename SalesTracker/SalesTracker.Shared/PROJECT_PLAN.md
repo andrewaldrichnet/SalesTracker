@@ -405,5 +405,44 @@ When adding cloud sync later, the architecture remains the same:
 - Implement dashboard with key metrics
 - Add charts for sales trends
 
-### Phase 3: Search and Filtering
+### Phase 3: Detail Views ✅ COMPLETED
+(separate from the edit views)
+- ✅ Add detail views with links to edit and allow delete. Item view should show past orders for that item, and allow quick access to those orders. It should also allow inventory adjustments.
+- ✅ Sale detail view should allow functionality to control things like marking as paid, marking as delivered, etc. It should also show info about the item that was sold, including the item image(s) and description.
+
+#### Implementation Details:
+**ItemDetail Page** (`/items/detail/{id}`):
+- Displays comprehensive item information (name, description, pricing, images)
+- Image gallery with thumbnails for multiple images
+- Inventory status showing current, allocated, and available quantities
+- Inventory adjustment form for manual stock updates (restock, damage, correction, returns)
+- Related orders section showing all past orders for that item
+- Links to edit item or delete item
+- Item metadata (creation date, modification date, item ID)
+
+**OrderDetail Page** (`/sales/detail/{id}`):
+- Displays complete order information with status badges
+- Mark as delivered/pending actions with date tracking
+- Mark as paid/unpaid actions with date tracking
+- Customer information display
+- Full item details including images, description, pricing, and cost
+- Order summary with quantity, dates, unit price, total, and profit calculation
+- Timeline view showing order progression (created, paid, delivered)
+- Links to related item detail page
+- Links to edit order or delete order
+- Order metadata (order ID, item ID, payment/delivery status)
+
+**Navigation Updates**:
+- ViewItems page navigates to ItemDetail instead of ItemSetup edit view
+- ViewSales page navigates to OrderDetail instead of OrderSetup edit view
+- Detail pages provide links back to list views and to edit/delete
+
+**Styling**:
+- Professional responsive layouts with grid-based structure
+- Status badges with color coding
+- Timeline UI for order progression
+- Image carousel with thumbnail selection
+- Mobile-optimized designs for all screen sizes
+
+### Phase 4: Search and Filtering
 - Implement search and filter capabilities for orders and items

@@ -64,6 +64,7 @@ public class DemoDataService
 
             var item = new Item
             {
+                // Don't set ItemID here - let it auto-increment in the database
                 Name = ProductNames[i],
                 Description = $"High-quality {ProductNames[i].ToLower()}",
                 Cost = cost,
@@ -74,6 +75,7 @@ public class DemoDataService
                 ModifiedDate = DateTime.UtcNow
             };
 
+            // AddAsync returns the generated ID
             var itemId = await _itemStore.AddAsync(item);
             item.ItemID = itemId;
             items.Add(item);
