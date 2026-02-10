@@ -1,23 +1,31 @@
 /*CSS Variables*/
 
 :root {
-    --primary-color: #682bd7;
-    --bs-primary: #682bd7;
-    --bs-primary-rgb: 104, 43, 215;
+    --primary-color: #4EB036;
+    --primary-color-light: #c7ebbf;
+    --primary-color-secondary: #a2de94;
+    --bs-primary: var(--primary-color);
+    --bs-primary-rgb: 78, 176, 74;
+    --pill-bg: rgb(78 176 54 / 13%);
 }
 
 
 
 
+.bg-secondary {
+    background: var(--primary-color-secondary) !important;
+}
 
-
+.text-primary-light {
+    color: var(--primary-color-light)
+}
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: var(--primary-color);
 }
 
 .btn-primary {
@@ -76,3 +84,54 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+
+
+
+
+.filter-tabs {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    background-color: var(--pill-bg);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+    .filter-pill:hover {
+        color: #fff;
+    }
+
+    .filter-pill.active {
+        background-color: var(--primary-color, #1b6ec2);
+        color: #fff;
+    }
+
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }

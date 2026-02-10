@@ -2,30 +2,7 @@
 @inject IImageStorageService ImageStorageService
 
 <div class="item-row" @onclick="HandleClick" style="cursor: pointer;">
-    <div class="item-row-image">
-        @if (Item.Images?.Count > 0 && !string.IsNullOrEmpty(Item.Images[0].ImagePath))
-        {
-            var imageUri = ImageStorageService.GetImageUri(Item.Images[0].ImagePath);
-            @if (!string.IsNullOrEmpty(imageUri))
-            {
-                <img src="@imageUri" alt="@Item.Name" class="item-image" />
-            }
-            else
-            {
-                <div class="item-image-placeholder">
-
-                    <ImageIcon />
-                </div>
-            }
-        }
-        else
-        {
-            <div class="item-image-placeholder">
-
-                <ImageIcon />
-            </div>
-        }
-    </div>
+    <ItemImageDisplay Image="Item.Images?.FirstOrDefault()" AltText="Item.Name" />
 
     <div class="item-row-middle">
         <div class="item-row-details">
@@ -57,9 +34,7 @@
     </div>
 
     <div class="item-row-arrow">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-        </svg>
+        <ArrowRightShortIcon />
     </div>
 </div>
 

@@ -56,17 +56,11 @@
                                         <span class="metric-change @(SalesPercentageChange >= 0 ? "positive text-success" : "negative text-danger")">
                                             @if (SalesPercentageChange >= 0)
                                             {
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                <path d="M8.5 4.5a.5.5 0 0 0-1 0v3.362l-1.146-1.147a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 7.862V4.5z" />
-                                            </svg>
+                                                <ArrowUpIcon />
                                             }
                                             else
                                             {
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                <path d="M7.5 11.5a.5.5 0 0 1-1 0V8.137L5.354 9.293a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L7.5 8.137v3.363z" />
-                                            </svg>
+                                                <ArrowDownIcon />
                                             }
                                             @Math.Abs(SalesPercentageChange).ToString("F1")%
                                         </span>
@@ -85,17 +79,11 @@
                                         <span class="metric-change @(ProfitPercentageChange >= 0 ? "positive text-success" : "negative text-danger")">
                                             @if (ProfitPercentageChange >= 0)
                                             {
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                <path d="M8.5 4.5a.5.5 0 0 0-1 0v3.362l-1.146-1.147a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 7.862V4.5z" />
-                                            </svg>
+                                                <ArrowUpIcon />
                                             }
                                             else
                                             {
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                                                <path d="M7.5 11.5a.5.5 0 0 1-1 0V8.137L5.354 9.293a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L7.5 8.137v3.363z" />
-                                            </svg>
+                                                <ArrowDownIcon />
                                             }
                                             @Math.Abs(ProfitPercentageChange).ToString("F1")%
                                         </span>
@@ -186,25 +174,16 @@
                             <div class="backorder-list">
                                 @foreach (var (item, qtyNeeded) in BackorderedItems)
                                 {
-                                    <div class="backorder-item d-flex gap-3">
-                                        <div class="item-image">
-                                            @if (item.Images.Any())
-                                            {
-                                                <img src="@item.Images[0].ImagePath" alt="@item.Name" />
-                                            }
-                                            else
-                                            {
-                                                <div class="item-image-placeholder">
-                                                    <ImageIcon />
-                                                </div>
-                                            }
+                                    <div class="backorder-item d-flex gap-3 align-items-center">
+                                        <div class="item-image me-1">
+                                            <ItemImageDisplay Image="item.Images?.FirstOrDefault()" AltText="item.Name" />
                                         </div>
                                         <div class="item-details">
                                             <span class="item-name">@item.Name</span>
                                         </div>
                                         <div class="flex-grow-1"></div>
                                         <div class="item-qty">
-                                            <span class="badge badge-warning bg-light text-dark p-2">@qtyNeeded</span>
+                                            <span class="badge bg-body-tertiary text-body p-2">@qtyNeeded</span>
                                         </div>
                                     </div>
                                 }

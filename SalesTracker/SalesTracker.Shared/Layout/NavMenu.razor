@@ -1,28 +1,43 @@
-﻿<div class="top-row ps-3 navbar bg-light">
+﻿<div class="top-row ps-3 navbar bg-body-secondary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">SalesTracker2</a>
+        <a class="navbar-brand" href="">
+            <img src="_content/SalesTracker.Shared/images/LogoFull.png" alt="Sales Tracker" class="mw-100" />
+        </a>
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" @ref="navToggle" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+<div class="nav-scrollable" @onclick="CloseNavMenu">
     <nav class="nav flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Dashboard
+            <NavLink class="nav-link text-body" href="" Match="NavLinkMatch.All">
+                <GraphUpIcon Width="24" Height="24" CssClass="me-1" />
+                Dashboard
             </NavLink>            
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="sales/view">
-                <span class="bi bi-eye-nav-menu" aria-hidden="true"></span> Sales
+            <NavLink class="nav-link text-body" href="sales/view">
+                <CartIcon Width="24" Height="24" CssClass="me-1" /> Sales
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="items/view">
-                <span class="bi bi-eye-nav-menu" aria-hidden="true"></span> Items
+            <NavLink class="nav-link text-body" href="items/view">
+                <BoxIcon Width="24" Height="24" CssClass="me-1" /> Items
             </NavLink>
         </div>
     </nav>
 </div>
+
+@code {
+    private ElementReference navToggle;
+
+    private async Task CloseNavMenu()
+    {
+        if (navToggle.Context != null)
+        {
+            await navToggle.FocusAsync();
+        }
+    }
+}
 

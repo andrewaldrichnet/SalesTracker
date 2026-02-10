@@ -2,3 +2,8 @@
  {
     width: 32px;
 }
+
+::deep .backorder-list .item-row-image {
+    width: 42px;
+    height: 42px;
+}

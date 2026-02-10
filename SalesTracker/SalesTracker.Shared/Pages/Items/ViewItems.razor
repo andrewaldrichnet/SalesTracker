@@ -6,9 +6,11 @@
 <PageTitle>Items</PageTitle>
 
 <div class="view-items-container">
-    <div class="items-header">
-        <h2>Items</h2>
-        <a href="/items/setup" class="btn btn-primary btn-lg">New Item</a>
+    <div class="sales-header d-md-flex justify-content-between mb-3 align-items-end">
+        <h2 class="fw-bolder m-0">Items</h2>
+        <a href="/items/setup" class="btn btn-primary btn-lg">
+            <PlusIcon CssClass="me-1" />
+            New Item</a>
     </div>
 
     @if (IsLoading)
@@ -36,7 +38,7 @@
             </div>
         </div>
 
-        <div class="filter-tabs">
+        <div class="filter-tabs mt-3">
             <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")" 
                     @onclick="() => SetFilter(FilterType.All)">
                 All Items

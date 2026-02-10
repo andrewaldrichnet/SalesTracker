@@ -1,0 +1,35 @@
+﻿@using SalesTracker.Shared.Models
+@inject IImageStorageService ImageStorageService
+
+<div class="item-row-image">
+    @if (!string.IsNullOrEmpty(Image?.ImagePath))
+    {
+        var imageUri = ImageStorageService.GetImageUri(Image.ImagePath);
+        @if (!string.IsNullOrEmpty(imageUri))
+        {
+            <img src="@imageUri" alt="@AltText" class="item-image" />
+        }
+        else
+        {
+            <div class="item-image-placeholder bg-secondary">
+                <ImageIcon CssClass="text-primary-light" />
+            </div>
+        }
+    }
+    else
+    {
+        <div class="item-image-placeholder bg-secondary">
+
+            <ImageIcon CssClass="text-primary-light" />
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public required ItemImage? Image { get; set; }
+
+    [Parameter]
+    public required string AltText { get; set; }
+}
