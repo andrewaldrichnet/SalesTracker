@@ -1,0 +1,71 @@
+﻿@inject IImageStorageService ImageStorageService
+
+<div class="d-flex gap-3">
+    <div class="item-images-section">
+        @if (Item.Images?.Count > 0)
+        {
+            <div class="main-image">
+                @{
+                    var mainImage = Item.Images.FirstOrDefault(i => i.IsPrimary) ?? Item.Images[0];
+                    var imageUri = ImageStorageService.GetImageUri(mainImage.ImagePath);
+                }
+                @if (!string.IsNullOrEmpty(imageUri))
+                {
+                    <img src="@imageUri" alt="@Item.Name" class="img-fluid rounded" />
+                }
+            </div>
+
+            @if (Item.Images.Count > 1)
+            {
+                <div class="thumbnail-images">
+                    @foreach (var image in Item.Images)
+                    {
+                        var thumbUri = ImageStorageService.GetImageUri(image.ImagePath);
+                        <div class="thumbnail">
+                             style="cursor: pointer;">
+                            @if (!string.IsNullOrEmpty(thumbUri))
+                            {
+                                <img src="@thumbUri" alt="Thumbnail" />
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-image-placeholder text-center">
+                <ImageIcon />
+                <p>No images available</p>
+            </div>
+        }
+    </div>
+    <div>
+        <h1 class="fs-2 fw-semibold">@Item.Name</h1>
+        @if (!string.IsNullOrEmpty(Item.Description))
+        {
+            <p class="item-description">@Item.Description</p>
+        }
+        <div class="item-pricing">
+            <div class="price-info d-flex align-items-end gap-1">
+                <div class="price-value fs-3 text-primary fw-bold">@(SalePrice.HasValue ? $"${SalePrice.Value:F2}" : "N/A")</div>
+                <!--calculated profit. e.g. 10% profit-->
+                @if (SalePrice.HasValue && Item.Cost > 0)
+                {
+                    var profit = SalePrice.Value - Item.Cost;
+                    var profitMargin = SalePrice.Value > 0 ? (profit / SalePrice.Value) * 100 : 0;
+                    <div class="profit-info text-muted">
+                        <small>@profitMargin.ToString("F1")% profit</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public required Item Item { get; set; }
+
+    [Parameter]
+    public required decimal? SalePrice { get; set; }
+}
