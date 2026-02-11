@@ -3,15 +3,15 @@
 <div class="inventory-status">
     @if (IsSold)
     {
-        <span class="sold-qty">Sold: @SoldQty</span>
+        <span class="sold-qty text-muted">Sold: @SoldQty</span>
     }
     else if (IsBackordered)
     {
-        <span class="badge bg-danger">Back-ordered</span>
+        <span class="badge bg-danger text-white">Back-ordered</span>
     }
     else if (AvailableQty > 0)
     {
-        <span class="inventory-count">@AvailableQty in stock</span>
+        <span class="inventory-count text-primary">@AvailableQty in stock</span>
     }
     else
     {

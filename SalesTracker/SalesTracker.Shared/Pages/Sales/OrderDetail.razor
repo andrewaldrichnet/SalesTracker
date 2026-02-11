@@ -122,7 +122,7 @@
                     @{
                         var profit = (Order.Price - Item?.Cost ?? 0) * Order.Qty;
                     }
-                    <div class="summary-row d-flex justify-content-between mt-1 bg-opacity-25 text-white rounded fs-5 px-3 py-3   @(profit >= 0 ? "profit bg-primary" : "loss bg-danger")">
+                    <div class="summary-row d-flex justify-content-between mt-1 bg-opacity-25 text-body rounded fs-5 px-3 py-3   @(profit >= 0 ? "profit bg-primary" : "loss bg-danger")">
                         <span class="fw-bold">Profit</span>
                         <strong class="@(profit >= 0 ? "text-primary" : "text-danger")">@profit.ToString("C2")</strong>
                     </div>

@@ -1,27 +1,59 @@
 ﻿@using SalesTracker.Shared
-<!DOCTYPE html>
-<html lang="en">
+@using Microsoft.AspNetCore.Http
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-    <ResourcePreloader />
-    <link rel="stylesheet" href="_content/SalesTracker.Shared/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="_content/SalesTracker.Shared/app.css" />
-    <link rel="stylesheet" href="SalesTracker.Web.styles.css" />
-    <ImportMap />
-    <link rel="icon" type="image/png" href="_content/SalesTracker.Shared/favicon.png" />
-    <script src="_content/SalesTracker.Shared/js/theme.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
-    <HeadOutlet @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
-</head>
+@inject IHttpContextAccessor httpContextAccessor
 
-<body>
-    <Routes @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
-    <script src="_content/SalesTracker.Shared/js/chart-init.js"></script>
-    <script src="_content/SalesTracker.Web.Client/js/image-resizer.js"></script>
-    <script src="@Assets["_framework/blazor.web.js"]"></script>
-</body>
+@if (httpContextAccessor.HttpContext.Request.Path.StartsWithSegments("/"))
+{
+    <!DOCTYPE html>
+    <html lang="en">
 
-</html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <base href="/" />
+        <ResourcePreloader />
+        <link rel="stylesheet" href="_content/SalesTracker.Shared/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="SalesTracker.Web.styles.css" />
+        <ImportMap />
+        <link rel="icon" type="image/png" href="_content/SalesTracker.Shared/favicon.png" />
+        <HeadOutlet  />
+    </head>
+
+    <body>
+        <Routes  />
+        <script src="@Assets["_framework/blazor.web.js"]"></script>
+    </body>
+
+    </html>
+}
+else
+{
+
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <base href="/" />
+        <ResourcePreloader />
+        <link rel="stylesheet" href="_content/SalesTracker.Shared/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="_content/SalesTracker.Shared/app.css" />
+        <link rel="stylesheet" href="SalesTracker.Web.styles.css" />
+        <ImportMap />
+        <link rel="icon" type="image/png" href="_content/SalesTracker.Shared/favicon.png" />
+        <script src="_content/SalesTracker.Shared/js/theme.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+        <HeadOutlet @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
+    </head>
+
+    <body>
+        <Routes @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
+        <script src="_content/SalesTracker.Shared/js/chart-init.js"></script>
+        <script src="_content/SalesTracker.Web.Client/js/image-resizer.js"></script>
+        <script src="@Assets["_framework/blazor.web.js"]"></script>
+    </body>
+
+    </html>            
+}

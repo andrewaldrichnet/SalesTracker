@@ -1,15 +1,12 @@
 .inventory-status {
     font-size: 0.875rem;
-    color: var(--text-secondary, #6c757d);
 }
 
 .inventory-count {
-    color: var(--success-color, #198754);
     font-weight: 500;
 }
 
 .sold-qty {
-    color: var(--text-primary, #212529);
     font-weight: 500;
 }
 

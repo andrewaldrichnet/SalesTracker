@@ -44,6 +44,21 @@
     </div>
     @if (!IsLoading && Item != null)
     {
+         @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                    @ErrorMessage
+                    <button type="button" class="btn-close" @onclick="() => ErrorMessage = string.Empty"></button>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(StatusMessage))
+            {
+            <div class="alert alert-primary alert-dismissible fade show mt-3" role="alert">
+                    @StatusMessage
+                    <button type="button" class="btn-close" @onclick="() => StatusMessage = string.Empty"></button>
+                </div>
+            }
+
         <div class="row mt-3">
             <div class="col-lg-4 col-xl-2 order-lg-1 my-3 my-lg-0">
                 <div class="d-flex flex-lg-column gap-3">
@@ -62,7 +77,7 @@
                 </div>
             </div>
             <div class="col-lg-8 col-xl-10">
-                <div class="rounded shadow bg-secondary-subtle p-4">
+                <div class="rounded shadow-sm bg-secondary-subtle p-4">
                     <!--Inventory Adjustment without reason-->
                     <h5 class="mb-2">Inventory Adjustment</h5>
                     <div class="d-flex gap-2">
@@ -92,7 +107,7 @@
                         <div class="orders-list">
                             @foreach (var order in RelatedOrders)
                             {
-                                    <div class="order-card bg-secondary-subtle rounded shadow mb-2 px-4 py-3" @onclick="() => NavigateToOrderDetail(order.OrderID)" style="cursor: pointer;">
+                                    <div class="order-card bg-secondary-subtle rounded shadow-sm mb-3 px-4 py-3" @onclick="() => NavigateToOrderDetail(order.OrderID)" style="cursor: pointer;">
                                 <div class="d-flex align-items-center mb-1">
                                     <div class="fw-bold">@order.CustomerName</div>
                                     <div class="order-status d-flex gap-1 ms-1">
@@ -159,6 +174,7 @@
     private bool IsLoading = true;
     private bool IsLoadingOrders = true;
     private string ErrorMessage = string.Empty;
+    private string StatusMessage = string.Empty;
     private ConfirmationDialog? ConfirmDialog;
     private int SelectedImageId = 0;
 
@@ -224,12 +240,6 @@
         if (Item == null)
             return;
 
-        if (string.IsNullOrWhiteSpace(AdjustmentReason))
-        {
-            ErrorMessage = "Please select a reason for the adjustment.";
-            return;
-        }
-
         try
         {
             Item.CurrentInventoryQty += AdjustmentAmount;
@@ -238,7 +248,7 @@
 
             AdjustmentAmount = 0;
             AdjustmentReason = string.Empty;
-            ErrorMessage = "Inventory adjusted successfully.";
+            StatusMessage = "Inventory adjusted successfully.";
             StateHasChanged();
         }
         catch (Exception ex)

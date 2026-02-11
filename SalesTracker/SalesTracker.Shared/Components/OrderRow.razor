@@ -1,7 +1,7 @@
 @using SalesTracker.Shared.Models
 @inject IImageStorageService ImageStorageService
 
-<div class="order-row" @onclick="HandleClick" style="cursor: pointer;">
+<div class="order-row bg-secondary-subtle text-body"  @onclick="HandleClick" style="cursor: pointer;">
     <div class="order-row-image">
         <ItemImageDisplay Image="Item?.Images?.FirstOrDefault()" AltText="Item.Name" />
     </div>
@@ -15,7 +15,7 @@
             }
         </div>
 
-        <div class="order-row-meta">
+        <div class="order-row-meta text-muted">
             <span class="order-date">@Order.SellDate.ToString("MMM dd, yyyy")</span>
             <span class="order-separator">•</span>
             <span class="order-item">@(Item?.Name ?? "Unknown Item")</span>
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <div class="order-row-arrow">
+    <div class="order-row-arrow text-muted">
         <ArrowRightShortIcon />
     </div>
 </div>

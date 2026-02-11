@@ -73,12 +73,12 @@
 
     .nav-item ::deep a.active {
         background-color: var(--primary-color);
-        color: white;
+        color: #fff !important;
     }
 
     .nav-item ::deep .nav-link:hover {
         background-color: var(--primary-color);
-        color: white;
+        color: #fff !important;
     }
 
 .nav-scrollable {

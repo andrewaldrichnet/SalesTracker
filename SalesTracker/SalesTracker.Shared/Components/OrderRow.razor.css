@@ -7,14 +7,13 @@
     border: 1px solid var(--border-color, #dee2e6);
     transition: all 0.2s ease;
     margin-bottom: 0.75rem;
-    background-color: var(--order-row-bg, #fff);
 }
 
-.order-row:hover {
-    background-color: var(--order-row-bg-hover, #f8f9fa);
-    border-color: var(--primary-color, #1b6ec2);
-    box-shadow: 0 2px 8px rgba(27, 110, 194, 0.1);
-}
+    .order-row:hover {
+        background-color: var(--primary-color-light);
+        border-color: var(--primary-color, #1b6ec2);
+        box-shadow: 0 2px 8px rgba(27, 110, 194, 0.1);
+    }
 
 
 .order-row-middle {
@@ -35,7 +34,6 @@
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
-    color: var(--text-primary, #212529);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -46,7 +44,6 @@
     align-items: center;
     gap: 0.75rem;
     font-size: 0.875rem;
-    color: var(--text-secondary, #6c757d);
 }
 
 .order-date {
@@ -77,12 +74,10 @@
 .order-price {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--text-primary, #212529);
 }
 
 .order-row-arrow {
     flex-shrink: 0;
-    color: var(--text-secondary, #6c757d);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -90,7 +85,7 @@
 }
 
 .order-row:hover .order-row-arrow {
-    color: var(--primary-color, #1b6ec2);
+    color: var(--primary-color);
     transform: translateX(4px);
 }
 
@@ -143,26 +138,3 @@
     }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .order-row {
-        --border-color: #495057;
-        --order-row-bg: #212529;
-        --order-row-bg-hover: #343a40;
-        --text-primary: #f8f9fa;
-        --text-secondary: #adb5bd;
-        --placeholder-icon-color: #666;
-    }
-}
-
-/* Light mode (explicit) */
-@media (prefers-color-scheme: light) {
-    .order-row {
-        --border-color: #dee2e6;
-        --order-row-bg: #fff;
-        --order-row-bg-hover: var(--primary-color-light);        
-        --text-primary: #212529;
-        --text-secondary: #6c757d;
-        --placeholder-icon-color: #999;
-    }
-}

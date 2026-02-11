@@ -1,7 +1,7 @@
 @using SalesTracker.Shared.Models
 @inject IImageStorageService ImageStorageService
 
-<div class="item-row" @onclick="HandleClick" style="cursor: pointer;">
+<div class="item-row bg-secondary-subtle text-body" @onclick="HandleClick" style="cursor: pointer;">
     <ItemImageDisplay Image="Item.Images?.FirstOrDefault()" AltText="Item.Name" />
 
     <div class="item-row-middle">
@@ -9,13 +9,13 @@
             <h5 class="item-name">@Item.Name</h5>
             @if (!string.IsNullOrEmpty(Item.Description))
             {
-                <p class="item-description">@Item.Description</p>
+                <p class="item-description text-muted">@Item.Description</p>
             }
         </div>
 
         <div class="item-row-pricing-inventory">
             <div class="price-stack">
-                <div class="sale-price">
+                <div class="sale-price text-primary">
                     @if (Item.SalePrice.HasValue)
                     {
                         <span>$@Item.SalePrice.Value.ToString("F2")</span>
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="item-row-arrow">
+    <div class="item-row-arrow text-muted">
         <ArrowRightShortIcon />
     </div>
 </div>
