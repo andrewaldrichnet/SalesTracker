@@ -1,0 +1,15 @@
+{
+  "hosting": {
+    "public": "bin/Release/net10.0/browser-wasm/publish/wwwroot",
+    "ignore": [
+      "firebase.json",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
