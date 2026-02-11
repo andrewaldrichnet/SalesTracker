@@ -13,6 +13,32 @@
             New Item</a>
     </div>
 
+    <div class="search-section">
+        <div class="search-box d-flex gap-3">
+            <InputText class="search-input form-control" placeholder="Search items..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+            <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
+                <SearchIcon />
+            </button>
+        </div>
+    </div>
+
+    <div class="filter-tabs mt-3">
+        <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")"
+                @onclick="() => SetFilter(FilterType.All)">
+            All Items
+        </button>
+        <button class="filter-pill @(CurrentFilter == FilterType.Backordered ? "active" : "")"
+                @onclick="() => SetFilter(FilterType.Backordered)">
+            Back-ordered
+        </button>
+        <button class="filter-pill @(CurrentFilter == FilterType.InStock ? "active" : "")"
+                @onclick="() => SetFilter(FilterType.InStock)">
+            Current Inventory
+        </button>
+    </div>
+
+
+
     @if (IsLoading)
     {
         <p>Loading items...</p>
@@ -29,30 +55,6 @@
     }
     else
     {
-        <div class="search-section">
-            <div class="search-box d-flex gap-3">
-                <InputText class="search-input form-control" placeholder="Search items..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
-                <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
-                    <SearchIcon />
-                </button>
-            </div>
-        </div>
-
-        <div class="filter-tabs mt-3">
-            <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")" 
-                    @onclick="() => SetFilter(FilterType.All)">
-                All Items
-            </button>
-            <button class="filter-pill @(CurrentFilter == FilterType.Backordered ? "active" : "")" 
-                    @onclick="() => SetFilter(FilterType.Backordered)">
-                Back-ordered
-            </button>
-            <button class="filter-pill @(CurrentFilter == FilterType.InStock ? "active" : "")" 
-                    @onclick="() => SetFilter(FilterType.InStock)">
-                Current Inventory
-            </button>
-        </div>
-
         <div class="items-list">
             @foreach (var item in FilteredItems)
             {

@@ -6,85 +6,205 @@
 
 <PageTitle>@(IsEditMode ? "Edit Sale" : "New Sale")</PageTitle>
 
-<div class="container">
-    <h1>@(IsEditMode ? "Edit Sale" : "New Sale")</h1>
-    <p>@(IsEditMode ? "Update the sale information below." : "Create a new sale by filling in the form below.")</p>
-    
+<div class="container sale-setup-container py-4">
+    <div class="setup-header mb-4 pb-3">
+        <h1 class="setup-title fw-bold mb-2">@(IsEditMode ? "Edit Sale" : "Create New Sale")</h1>
+        <p class="text-muted mb-0">@(IsEditMode ? "Update the sale information" : "Fill in the details to record a new sale")</p>
+    </div>
+
     @if (!string.IsNullOrEmpty(ErrorMessage))
     {
-        <div class="alert alert-danger" role="alert">
-            @ErrorMessage
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-2 flex-shrink-0">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0l-5.708 9.762a1.125 1.125 0 0 0 .95 1.679h11.432a1.125 1.125 0 0 0 .95-1.679L8.982 1.566ZM8 5a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 5Zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z" />
+            </svg>
+            <span>@ErrorMessage</span>
+            <button type="button" class="btn-close" @onclick="@(() => ErrorMessage = string.Empty)"></button>
         </div>
     }
 
     @if (!string.IsNullOrEmpty(SuccessMessage))
     {
-        <div class="alert alert-success" role="alert">
-            @SuccessMessage
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-2 flex-shrink-0">
+                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+            </svg>
+            <span>@SuccessMessage</span>
+            <button type="button" class="btn-close" @onclick="@(() => SuccessMessage = string.Empty)"></button>
         </div>
     }
-    
-    <form @onsubmit="HandleSubmit">
-        <div class="mb-3">
-            <label for="customerName" class="form-label">Customer Name *</label>
-            <input type="text" class="form-control" id="customerName" @bind="CurrentOrder.CustomerName" required />
+
+    <form @onsubmit="HandleSubmit" class="setup-form">
+        <!-- Customer Information Section -->
+        <div class="form-section rounded p-4 mb-4 card bg-secondary-subtle">
+            <div class="card-body">
+                <h5 class="section-title pb-2 mb-3">Customer Information</h5>
+
+                <div class="mb-0">
+                    <label for="customerName" class="form-label">Customer Name <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="customerName" @bind="CurrentOrder.CustomerName" placeholder="Enter customer name" required />
+                </div>
+            </div>
         </div>
-        
-        <div class="mb-3">
-            <label for="itemId" class="form-label">Item *</label>
-            <select class="form-select" id="itemId" @bind="CurrentOrder.ItemID" required>
-                <option selected disabled value="0">Select an item...</option>
-                @foreach (var item in AvailableItems)
+
+        <!-- Order Details Section -->
+        <div class="form-section rounded p-4 mb-4 card bg-secondary-subtle">
+            <div class="card-body">
+                <h5 class="section-title pb-2 mb-3">Order Details</h5>
+
+                <!-- Item Selection with Search -->
+                <div class="mb-3">
+                    <label for="itemSearch" class="form-label">Item <span class="required">*</span></label>
+
+
+                    @if (CurrentOrder.ItemID > 0)
+                    {
+                        var selectedItem = AvailableItems.FirstOrDefault(i => i.ItemID == CurrentOrder.ItemID);
+                        @if (selectedItem != null)
+                        {
+                            <div class="selected-item-preview p-3 rounded bg-secondary-subtle border mb-3">
+                                <div class="d-flex gap-3">
+                                    <div class="selected-item-image" style="flex-shrink: 0;">
+                                        <ItemImageDisplay Image="selectedItem.Images?.FirstOrDefault()" AltText="selectedItem.Name" />
+                                    </div>
+                                    <div class="selected-item-details flex-grow-1">
+                                        <h6 class="mb-1">@selectedItem.Name</h6>
+                                        @if (!string.IsNullOrEmpty(selectedItem.Description))
+                                        {
+                                            <p class="text-muted small mb-2">@selectedItem.Description</p>
+                                        }
+                                        <div class="d-flex gap-3 align-items-center">
+                                            <div>
+                                                <InventoryStatus AllocatedQty="selectedItem.AllocatedInventoryQty"
+                                                                 CurrentQty="selectedItem.CurrentInventoryQty"
+                                                                 AvailableQty="selectedItem.AvailableInventoryQty" />
+                                            </div>
+                                            <div>
+                                                <span class="fw-bold text-primary">@(selectedItem.SalePrice?.ToString("C2") ?? "N/A")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary w-100" @onclick="ClearItemSelection">
+                                Change
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="search-box d-flex gap-2 mb-2">
+                            <input type="text" class="form-control" id="itemSearch" placeholder="Search items..."
+                                   @bind="ItemSearchTerm" @oninput="HandleItemSearch" />
+                        </div>
+
+                        @if (FilteredItems.Count > 0)
+                        {
+                            <div class="item-selection-list">
+                                @foreach (var item in FilteredItems.Take(5))
+                                {
+                                    <div class="item-selection-card p-2 mb-2 rounded border cursor-pointer"
+                                         style="cursor: pointer;" @onclick="() => SelectItem(item)">
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <ItemImageDisplay Image="item.Images?.FirstOrDefault()" AltText="item.Name" />
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold">@item.Name</div>
+                                                <small class="text-muted">Available: @item.AvailableInventoryQty | Price: $@item.SalePrice?.ToString("F2")</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(ItemSearchTerm))
+                        {
+                            <div class="alert alert-info small mb-0">
+                                No items matching "@ItemSearchTerm"
+                            </div>
+                        }
+                    }
+
+                </div>
+
+                @if (CurrentOrder.ItemID > 0)
                 {
-                    <option value="@item.ItemID">@item.Name (Available: @item.AvailableInventoryQty)</option>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="quantity" class="form-label">Quantity <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="quantity" @bind="CurrentOrder.Qty" placeholder="1" required />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="price" class="form-label">Price Override</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="price" step="0.01" @bind="CurrentOrder.Price" placeholder="0.00" required />
+                            </div>
+                        </div>
+                    </div>
                 }
-            </select>
-        </div>
-        
-        <div class="mb-3">
-            <label for="quantity" class="form-label">Quantity *</label>
-            <input type="number" class="form-control" id="quantity" @bind="CurrentOrder.Qty" required />
-        </div>
-        
-        <div class="mb-3">
-            <label for="price" class="form-label">Price *</label>
-            <input type="number" class="form-control" id="price" step="0.01" @bind="CurrentOrder.Price" required />
-        </div>
-        
-        <div class="mb-3">
-            <label for="saleDate" class="form-label">Sale Date *</label>
-            <input type="date" class="form-control" id="saleDate" @bind="SellDate" required />
+
+                <div class="mb-0">
+                    <label for="saleDate" class="form-label">Sale Date <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="saleDate" @bind="SellDate" required />
+                </div>
+            </div>
         </div>
 
         @if (IsEditMode)
         {
-            <div class="mb-3">
-                <label class="form-label">
-                    <input type="checkbox" @bind="CurrentOrder.HasReceivedPayment" />
-                    Payment Received
-                </label>
-            </div>
+            <!-- Fulfillment Status Section -->
+            <div class="form-section rounded p-4 mb-4 card bg-secondary-subtle">
+                <div class="card-body">
+                    <h5 class="section-title pb-2 mb-3">Fulfillment Status</h5>
 
-            <div class="mb-3">
-                <label class="form-label">
-                    <input type="checkbox" @bind="CurrentOrder.HasDelivered" />
-                    Delivered
-                </label>
-            </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="paymentReceived" @bind="CurrentOrder.HasReceivedPayment" />
+                            <label class="form-check-label" for="paymentReceived">
+                                Payment Received
+                            </label>
+                        </div>
+                    </div>
 
-            @if (CurrentOrder.HasDelivered)
-            {
-                <div class="mb-3">
-                    <label for="deliveryDate" class="form-label">Delivery Date</label>
-                    <input type="date" class="form-control" id="deliveryDate" @bind="DeliveryDate" />
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="delivered" @bind="CurrentOrder.HasDelivered" />
+                            <label class="form-check-label" for="delivered">
+                                Delivered
+                            </label>
+                        </div>
+                    </div>
+
+                    @if (CurrentOrder.HasDelivered)
+                    {
+                        <div class="mb-0 pt-2 border-top">
+                            <label for="deliveryDate" class="form-label">Delivery Date</label>
+                            <input type="date" class="form-control" id="deliveryDate" @bind="DeliveryDate" />
+                        </div>
+                    }
                 </div>
-            }
+            </div>
         }
-        
-        <button type="submit" class="btn btn-primary" disabled="@IsSubmitting">
-            @(IsSubmitting ? "Saving..." : (IsEditMode ? "Save Changes" : "Create Sale"))
-        </button>
-        <a href="/sales/view" class="btn btn-secondary">Cancel</a>
+
+        <!-- Action Buttons -->
+        <div class="d-flex gap-2 flex-wrap pt-3 border-top">
+            <a href="/sales/view" class="btn btn-outline-secondary btn-lg flex-grow-1">Cancel</a>
+            <button type="submit" class="btn btn-primary btn-lg flex-grow-1" disabled="@IsSubmitting">
+                @if (IsSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span>Saving...</span>
+                }
+                else
+                {
+                    <span>@(IsEditMode ? "Save Changes" : "Create Sale")</span>
+                }
+            </button>
+        </div>
     </form>
 </div>
 
@@ -94,18 +214,21 @@
 
     private Order CurrentOrder = new();
     private List<Item> AvailableItems = new();
+    private List<Item> FilteredItems = new();
+    private string ItemSearchTerm = string.Empty;
     private bool IsEditMode => !string.IsNullOrEmpty(Id);
     private bool IsSubmitting = false;
     private string ErrorMessage = string.Empty;
     private string SuccessMessage = string.Empty;
-    private DateTime SellDate = DateTime.UtcNow;
-    private DateTime DeliveryDate = DateTime.UtcNow;
+    private DateTime SellDate = DateTime.Now;
+    private DateTime DeliveryDate = DateTime.Now;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             AvailableItems = await ItemService.GetAllItemsAsync();
+            FilteredItems = AvailableItems;
 
             if (IsEditMode && int.TryParse(Id, out var orderId))
             {
@@ -122,11 +245,52 @@
                     ErrorMessage = "Order not found.";
                 }
             }
+            else
+            {
+                // Set default quantity to 1 for new orders
+                CurrentOrder.Qty = 1;
+            }
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Error loading form: {ex.Message}";
         }
+    }
+
+    private void HandleItemSearch(ChangeEventArgs e)
+    {
+        ItemSearchTerm = e.Value?.ToString() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(ItemSearchTerm))
+        {
+            FilteredItems = AvailableItems;
+        }
+        else
+        {
+            var searchLower = ItemSearchTerm.ToLower();
+            FilteredItems = AvailableItems
+                .Where(i => i.Name.ToLower().Contains(searchLower) ||
+                           (i.Description?.ToLower().Contains(searchLower) ?? false))
+                .ToList();
+        }
+    }
+
+    private void SelectItem(Item item)
+    {
+        CurrentOrder.ItemID = item.ItemID;
+        CurrentOrder.Price = item.SalePrice ?? 0;
+        CurrentOrder.Qty = 1; // Default to 1 when selecting a new item
+        ItemSearchTerm = string.Empty;
+        FilteredItems = new(); // Clear the filtered list when item is selected
+    }
+
+    private void ClearItemSelection()
+    {
+        CurrentOrder.ItemID = 0;
+        CurrentOrder.Price = 0;
+        CurrentOrder.Qty = 1;
+        ItemSearchTerm = string.Empty;
+        FilteredItems = AvailableItems;
     }
 
     private async Task HandleSubmit()
@@ -137,6 +301,13 @@
 
         try
         {
+            if (IsEditMode == false)
+            {
+                CurrentOrder.CreatedDate = DateTime.UtcNow;
+            }
+
+            CurrentOrder.ModifiedDate = DateTime.UtcNow;
+
             CurrentOrder.SellDate = SellDate;
 
             if (DeliveryDate != DateTime.UtcNow && CurrentOrder.HasDelivered)
@@ -157,8 +328,8 @@
             }
 
             // Redirect after 1 second
-            await Task.Delay(1000);
-            Navigation.NavigateTo("/sales/view");
+            await Task.Delay(300);
+            Navigation.NavigateTo($"/sales/detail/{CurrentOrder.OrderID}");
         }
         catch (Exception ex)
         {

@@ -13,6 +13,31 @@
         </a>
     </div>
 
+    <div class="search-section">
+        <div class="search-box d-flex gap-3">
+            <InputText class="search-input form-control" placeholder="Search by customer name..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+            <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
+                <SearchIcon />
+            </button>
+        </div>
+    </div>
+
+    <div class="filter-tabs mt-3">
+        <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")"
+                @onclick="() => SetFilter(FilterType.All)">
+            All Sales
+        </button>
+        <button class="filter-pill @(CurrentFilter == FilterType.PendingDelivery ? "active" : "")"
+                @onclick="() => SetFilter(FilterType.PendingDelivery)">
+            Pending Delivery
+        </button>
+        <button class="filter-pill @(CurrentFilter == FilterType.Unpaid ? "active" : "")"
+                @onclick="() => SetFilter(FilterType.Unpaid)">
+            Unpaid
+        </button>
+    </div>
+
+
     @if (IsLoading)
     {
         <p>Loading sales...</p>
@@ -29,30 +54,6 @@
     }
     else
     {
-        <div class="search-section">
-            <div class="search-box d-flex gap-3">
-                <InputText class="search-input form-control" placeholder="Search by customer name..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
-                <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
-                    <SearchIcon />
-                </button>
-            </div>
-        </div>
-
-        <div class="filter-tabs mt-3">
-            <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")" 
-                    @onclick="() => SetFilter(FilterType.All)">
-                All Sales
-            </button>
-            <button class="filter-pill @(CurrentFilter == FilterType.PendingDelivery ? "active" : "")" 
-                    @onclick="() => SetFilter(FilterType.PendingDelivery)">
-                Pending Delivery
-            </button>
-            <button class="filter-pill @(CurrentFilter == FilterType.Unpaid ? "active" : "")" 
-                    @onclick="() => SetFilter(FilterType.Unpaid)">
-                Unpaid
-            </button>
-        </div>
-
         <div class="orders-list">
             @foreach (var order in FilteredOrders)
             {

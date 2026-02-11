@@ -1,5 +1,10 @@
 // Chart.js initialization for Dashboard
+
 window.renderSalesChart = function(canvasId, labels, salesData) {
+    window.chartCanvasId = canvasId;
+    window.chartLabels = labels;
+    window.chartSalesData = salesData;
+    
     const ctx = document.getElementById(canvasId);
     if (!ctx) {
         console.error('Canvas element not found:', canvasId);
@@ -16,11 +21,24 @@ window.renderSalesChart = function(canvasId, labels, salesData) {
     if (window.mysalesChart) {
         window.mysalesChart.destroy();
     }
+    
+    // Set up resize listener (only once)
+    if (!window.chartResizeListenerAttached) {
+        window.chartResizeListenerAttached = true;
+        window.addEventListener('resize', function() {
+            clearTimeout(window.chartResizeTimeout);
+            window.chartResizeTimeout = setTimeout(function() {
+                if (window.mysalesChart && window.chartCanvasId && window.chartLabels && window.chartSalesData) {
+                    window.renderSalesChart(chartCanvasId, chartLabels, window.chartSalesData);
+                }
+            }, 250);
+        });
+    }
 
     // Create gradient
     const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
-    gradient.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
+    gradient.addColorStop(0, 'rgba(78, 176, 54, 0.4)');
+    gradient.addColorStop(1, 'rgba(78, 176, 54, 0.05)');
 
     // Create chart
     window.mysalesChart = new Chart(ctx, {
@@ -28,9 +46,9 @@ window.renderSalesChart = function(canvasId, labels, salesData) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Daily Sales',
+                label: 'Sales',
                 data: salesData,
-                borderColor: '#667eea',
+                borderColor: '#4EB036',
                 backgroundColor: gradient,
                 borderWidth: 3,
                 borderCapStyle: 'round',
@@ -38,28 +56,19 @@ window.renderSalesChart = function(canvasId, labels, salesData) {
                 fill: true,
                 tension: 0.4,
                 pointRadius: 4,
-                pointBackgroundColor: '#667eea',
+                pointBackgroundColor: '#4EB036',
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2,
                 pointHoverRadius: 6,
-                pointHoverBackgroundColor: '#667eea'
+                pointHoverBackgroundColor: '#4EB036'
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    display: true,
-                    labels: {
-                        font: {
-                            size: 12,
-                            weight: '500'
-                        },
-                        padding: 15,
-                        usePointStyle: true,
-                        color: '#212529'
-                    }
+                    display: false
                 },
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',

@@ -11,20 +11,13 @@
 <div class="dashboard-container">
 <div class="dashboard-header d-flex justify-content-between">
     <h1>Dashboard</h1>   
-    <div class="search-section">
-        <div class="search-box d-flex gap-3" style="max-width: 800px;">
-            <InputText class="search-input form-control" placeholder="Search..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
-            <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
-               <SearchIcon />
-            </button>
-        </div>
-    </div>
 </div>
 
     @if (IsLoading)
     {
-        <div class="loading-spinner">
-            <p>Loading dashboard data...</p>
+        <div class="loading-view d-flex flex-column justify-content-center align-items-center text-center m-auto" style="height: 400px">
+            <div><img src="_content/SalesTracker.Shared/images/Logo.png" alt="Sales Tracker" width="128" height="128" /></div>
+            <div><p class="text-muted mt-3">Loading dashboard data...</p></div>
         </div>
     }
     else if (!string.IsNullOrEmpty(ErrorMessage))
@@ -37,11 +30,11 @@
     {
         <!-- Top Row: Sales Chart and New Sale Button + Metrics -->
         <div class="row mb-3">
-            <div class="col-md-6">
-                <div class="card shadow-lg"><div class="card-body"><canvas id="salesChart"></canvas></div></div>
+            <div class="col-lg-6">
+                <div class="card bg-secondary-subtle shadow-xl"><div class="card-body"><canvas id="salesChart"></canvas></div></div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <a href="/sales/setup" class="btn btn-primary btn-lg new-sale-btn w-100">
                     <PlusIcon />
                     New Sale
@@ -49,7 +42,7 @@
 
                 <div class="metrics-row row mt-3">
                     <div class="col-6">
-                        <div class="metric-card card me-1 rounded-3 shadow-lg">
+                        <div class="metric-card card bg-secondary-subtle me-1 rounded-3 shadow-xl">
                             <div class="card-body py-4 my-3 d-flex">
                                 <div class="m-auto d-inline-block">
                                     <div class="metric-header mb-1">
@@ -72,7 +65,7 @@
                         </div>
                     </div>
                     <div class=" col-6">
-                        <div class="metric-card card ms-1  rounded-3 shadow-lg">
+                        <div class="metric-card card bg-secondary-subtle ms-1  rounded-3 shadow-xl">
                                  <div class="card-body py-4 my-3 d-flex">
                                  <div class="m-auto d-inline-block">
                                     <div class="metric-header mb-1">
@@ -100,9 +93,9 @@
 
         <!-- Second Row: Stats Cards and Backorders -->
         <div class="row">
-            <div class="col-lg-6">
-                <div class="stats-container d-flex gap-3">
-                    <div class="card shadow-lg flex-grow-1">
+            <div class="col-xl-6">
+                <div class="stats-container d-flex gap-3 mb-3">
+                    <div class="card bg-secondary-subtle shadow-xl flex-grow-1">
                         <div class="card-body">
                             <div class="d-flex flex-column gap-3">
                                 <div>
@@ -113,14 +106,14 @@
                                     </div>
                                 </div>
                                 <div class="stat-content">
-                                    <div class="stat-title fs-5">Pending Deliveries</div>
+                                    <div class="stat-title fs-6 fw-bold">Pending Deliveries</div>
                                     <div class="stat-number fs-1">@PendingDeliveries</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card shadow-lg flex-grow-1">
+                    <div class="card bg-secondary-subtle shadow-xl flex-grow-1">
                         <div class="card-body">
                             <div class="d-flex flex-column gap-3">
                                 <div>
@@ -131,14 +124,14 @@
                                     </div>
                                 </div>
                                 <div class="stat-content">
-                                    <div class="stat-title fs-5"># of Items</div>
+                                    <div class="stat-title fs-6 fw-bold"># of Items</div>
                                     <div class="stat-number fs-1">@TotalItems</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card shadow-lg flex-grow-1">
+                    <div class="card bg-secondary-subtle shadow-xl flex-grow-1">
                         <div class="card-body">
                             <div class="d-flex flex-column gap-3">
                                 <div>
@@ -149,7 +142,7 @@
                                     </div>
                                 </div>
                                 <div class="stat-content">
-                                    <div class="stat-title fs-5">Orders This Month</div>
+                                    <div class="stat-title fs-6 fw-bold">Orders This Month</div>
                                     <div class="stat-number fs-1">@OrdersThisMonth</div>
                                 </div>
                             </div>
@@ -158,7 +151,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-6">
+            <div class="col-xl-6">
                 <div>
                     <div class="d-flex justify-content-between">
                             <h5>Back-orders</h5>
@@ -206,7 +199,6 @@
 @code {
     private bool IsLoading = true;
     private string ErrorMessage = string.Empty;
-    private string SearchTerm = string.Empty;
     private bool renderedChart = false;
 
     private decimal CurrentMonthSales = 0m;
@@ -281,11 +273,6 @@
         DailySalesData = await DashboardService.GetDailySalesForCurrentMonthAsync();
     }
 
-    private void HandleSearch()
-    {
-        // Search functionality can be implemented to filter orders or items
-        // For now, navigation to sales or items page can be added
-    }
 
     private async Task CreateDemoData()
     {

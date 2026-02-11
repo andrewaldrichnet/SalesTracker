@@ -1,4 +1,10 @@
 .item-images-section {
-    width: 300px;
-    max-width: 50%;
+    width: 250px;
+    max-width: 40%;
+}
+
+.no-image-placeholder {
+    background-color: var(--placeholder-bg, #e9ecef);
+    width: 92px;
+    height: 92px;
 }

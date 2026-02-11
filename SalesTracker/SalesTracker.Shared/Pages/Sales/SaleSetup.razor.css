@@ -1,0 +1,21 @@
+.sale-setup-container {
+    max-width: 700px;
+}
+
+.setup-header {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.setup-title {
+    font-size: 1.75rem;
+}
+
+.section-title {
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.required {
+    color: #dc3545;
+}

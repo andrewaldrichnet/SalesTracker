@@ -151,7 +151,6 @@
         --order-row-bg-hover: #343a40;
         --text-primary: #f8f9fa;
         --text-secondary: #adb5bd;
-        --placeholder-bg: #495057;
         --placeholder-icon-color: #666;
     }
 }
@@ -164,7 +163,6 @@
         --order-row-bg-hover: var(--primary-color-light);        
         --text-primary: #212529;
         --text-secondary: #6c757d;
-        --placeholder-bg: #e9ecef;
         --placeholder-icon-color: #999;
     }
 }

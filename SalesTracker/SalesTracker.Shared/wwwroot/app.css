@@ -7,9 +7,29 @@
     --bs-primary: var(--primary-color);
     --bs-primary-rgb: 78, 176, 74;
     --pill-bg: rgb(78 176 54 / 13%);
+    --placeholder-bg: #86c577;
+    --btn-hover-bg: #41922d;
+    --btn-hover-border-color: #4EB036;
 }
 
 
+@media all and (min-width: 400px) {
+    .navbar-brand {
+        max-width: 100px;
+    }
+    .navbar-toggle {
+        margin-top: 6px;
+    }
+}
+
+.card {
+    border: none;
+}
+
+.btn:hover {
+    background-color: var(--btn-hover-bg);
+    border-color: var(--btn-hover-border-color);
+}
 
 
 .bg-secondary {

@@ -22,7 +22,7 @@
                     {
                         var thumbUri = ImageStorageService.GetImageUri(image.ImagePath);
                         <div class="thumbnail">
-                             style="cursor: pointer;">
+                            style="cursor: pointer;">
                             @if (!string.IsNullOrEmpty(thumbUri))
                             {
                                 <img src="@thumbUri" alt="Thumbnail" />
@@ -34,9 +34,8 @@
         }
         else
         {
-            <div class="no-image-placeholder text-center">
-                <ImageIcon />
-                <p>No images available</p>
+            <div class="align-items-end d-flex flex-column justify-content-center no-image-placeholder rounded text-center">
+                <div class=" no-image-placeholder text-center rounded align-items-center d-flex flex-column justify-content-center "><ImageIcon /></div>
             </div>
         }
     </div>

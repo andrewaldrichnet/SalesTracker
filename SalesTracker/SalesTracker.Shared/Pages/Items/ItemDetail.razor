@@ -64,7 +64,7 @@
             <div class="col-lg-8 col-xl-10">
                 <div class="rounded shadow bg-secondary-subtle p-4">
                     <!--Inventory Adjustment without reason-->
-                    <h4 class="mb-1">Inventory Adjustment</h4>
+                    <h5 class="mb-2">Inventory Adjustment</h5>
                     <div class="d-flex gap-2">
                         <!-- Stepper style input with minus and plus button with a input in the middle -->
                         <div class="input-group input-group-lg" style="max-width: 200px;">
@@ -93,7 +93,7 @@
                             @foreach (var order in RelatedOrders)
                             {
                                     <div class="order-card bg-secondary-subtle rounded shadow mb-2 px-4 py-3" @onclick="() => NavigateToOrderDetail(order.OrderID)" style="cursor: pointer;">
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center mb-1">
                                     <div class="fw-bold">@order.CustomerName</div>
                                     <div class="order-status d-flex gap-1 ms-1">
                                         @if (order.HasDelivered)
