@@ -314,14 +314,28 @@
 
         try
         {
-            // This would require Chart.js library to be imported
-            // For now, we're setting up the data structure
-            // You'll need to add Chart.js to your HTML head
+            Console.WriteLine("[Dashboard] About to call renderSalesChart");
+            Console.WriteLine($"[Dashboard] Canvas ID: salesChart, Labels: {labels.Count}, Sales data: {sales.Count}");
+            
+            // Check if function exists
+            var funcExists = await JS.InvokeAsync<bool>("eval", "typeof renderSalesChart !== 'undefined'");
+            Console.WriteLine($"[Dashboard] renderSalesChart function exists: {funcExists}");
+            
+            if (!funcExists)
+            {
+                Console.WriteLine("[Dashboard] ERROR: renderSalesChart function not found!");
+                ErrorMessage = "Chart library failed to load";
+                return;
+            }
+            
             await JS.InvokeVoidAsync("renderSalesChart", "salesChart", labels, sales.Select(s => (double)s).ToList());
+            Console.WriteLine("[Dashboard] renderSalesChart invoked successfully");
         }
-        catch
+        catch (Exception ex)
         {
-            // Chart.js not available or error rendering
+            Console.WriteLine($"[Dashboard] ERROR calling renderSalesChart: {ex.Message}");
+            Console.WriteLine($"[Dashboard] Stack trace: {ex.StackTrace}");
+            ErrorMessage = $"Error rendering chart: {ex.Message}";
         }
     }
 }
