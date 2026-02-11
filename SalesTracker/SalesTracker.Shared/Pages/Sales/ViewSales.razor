@@ -4,66 +4,66 @@
 @inject NavigationManager Navigation
 
 <PageTitle>Sales</PageTitle>
+<div class="main-content">
+    <div class="view-sales-container">
+        <div class="sales-header d-md-flex justify-content-between mb-3 align-items-end">
+            <h2 class="fw-bolder m-0">Sales</h2>
+            <a href="/sales/setup" class="btn btn-primary btn-lg">
+                <PlusIcon CssClass="me-1" />New Sale
+            </a>
+        </div>
 
-<div class="view-sales-container">
-    <div class="sales-header d-md-flex justify-content-between mb-3 align-items-end">
-        <h2 class="fw-bolder m-0">Sales</h2>
-        <a href="/sales/setup" class="btn btn-primary btn-lg">
-            <PlusIcon CssClass="me-1" />New Sale
-        </a>
-    </div>
+        <div class="search-section">
+            <div class="search-box d-flex gap-3">
+                <InputText class="search-input form-control" placeholder="Search by customer name..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+                <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
+                    <SearchIcon />
+                </button>
+            </div>
+        </div>
 
-    <div class="search-section">
-        <div class="search-box d-flex gap-3">
-            <InputText class="search-input form-control" placeholder="Search by customer name..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
-            <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
-                <SearchIcon />
+        <div class="filter-tabs mt-3">
+            <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")"
+                    @onclick="() => SetFilter(FilterType.All)">
+                All Sales
+            </button>
+            <button class="filter-pill @(CurrentFilter == FilterType.PendingDelivery ? "active" : "")"
+                    @onclick="() => SetFilter(FilterType.PendingDelivery)">
+                Pending Delivery
+            </button>
+            <button class="filter-pill @(CurrentFilter == FilterType.Unpaid ? "active" : "")"
+                    @onclick="() => SetFilter(FilterType.Unpaid)">
+                Unpaid
             </button>
         </div>
-    </div>
-
-    <div class="filter-tabs mt-3">
-        <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")"
-                @onclick="() => SetFilter(FilterType.All)">
-            All Sales
-        </button>
-        <button class="filter-pill @(CurrentFilter == FilterType.PendingDelivery ? "active" : "")"
-                @onclick="() => SetFilter(FilterType.PendingDelivery)">
-            Pending Delivery
-        </button>
-        <button class="filter-pill @(CurrentFilter == FilterType.Unpaid ? "active" : "")"
-                @onclick="() => SetFilter(FilterType.Unpaid)">
-            Unpaid
-        </button>
-    </div>
 
 
-    @if (IsLoading)
-    {
+        @if (IsLoading)
+        {
         <p>Loading sales...</p>
-    }
-    else if (!string.IsNullOrEmpty(ErrorMessage))
-    {
+        }
+        else if (!string.IsNullOrEmpty(ErrorMessage))
+        {
         <div class="alert alert-danger" role="alert">
             @ErrorMessage
         </div>
-    }
-    else if (Orders.Count == 0)
-    {
+        }
+        else if (Orders.Count == 0)
+        {
         <p>No sales found. <a href="/sales/setup">Create one now.</a></p>
-    }
-    else
-    {
+        }
+        else
+        {
         <div class="orders-list">
             @foreach (var order in FilteredOrders)
             {
-                var item = Items.FirstOrDefault(i => i.ItemID == order.ItemID);
-                <OrderRow Order="order" Item="item" OnClick="HandleOrderClick" />
+            var item = Items.FirstOrDefault(i => i.ItemID == order.ItemID);
+            <OrderRow Order="order" Item="item" OnClick="HandleOrderClick" />
             }
         </div>
-    }
+        }
+    </div>
 </div>
-
 <ConfirmationDialog @ref="ConfirmDialog" Title="Delete Order" Message="Are you sure you want to delete this order? This action cannot be undone." ConfirmText="Delete" CancelText="Cancel" />
 
 @code {

@@ -48,19 +48,7 @@ public class DashboardService
         return orders.Sum(o => o.Price * o.Qty);
     }
 
-    /// <summary>
-    /// Gets the month-over-month sales percentage change
-    /// </summary>
-    public async Task<decimal> GetMonthlySalesPercentageChangeAsync()
-    {
-        var currentMonth = await GetCurrentMonthSalesAsync();
-        var previousMonth = await GetPreviousMonthSalesAsync();
-
-        if (previousMonth == 0)
-            return currentMonth > 0 ? 100 : 0;
-
-        return ((currentMonth - previousMonth) / previousMonth) * 100;
-    }
+    
 
     /// <summary>
     /// Gets net profit (sales revenue minus cost of goods sold)
@@ -272,17 +260,4 @@ public class DashboardService
         });
     }
 
-    /// <summary>
-    /// Gets month-over-month profit percentage change
-    /// </summary>
-    public async Task<decimal> GetMonthlyProfitPercentageChangeAsync()
-    {
-        var currentMonth = await GetCurrentMonthNetProfitAsync();
-        var previousMonth = await GetPreviousMonthNetProfitAsync();
-
-        if (previousMonth == 0)
-            return currentMonth > 0 ? 100 : 0;
-
-        return ((currentMonth - previousMonth) / previousMonth) * 100;
-    }
 }

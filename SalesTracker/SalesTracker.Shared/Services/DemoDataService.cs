@@ -10,6 +10,7 @@ public class DemoDataService
 {
     private readonly IDataStore<Item> _itemStore;
     private readonly IDataStore<Order> _orderStore;
+    private readonly DemoDataFlagService _flagService;
 
     private static readonly string[] ProductNames = new[]
     {
@@ -35,10 +36,11 @@ public class DemoDataService
         "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"
     };
 
-    public DemoDataService(IDataStore<Item> itemStore, IDataStore<Order> orderStore)
+    public DemoDataService(IDataStore<Item> itemStore, IDataStore<Order> orderStore, DemoDataFlagService flagService)
     {
         _itemStore = itemStore;
         _orderStore = orderStore;
+        _flagService = flagService;
     }
 
     /// <summary>
@@ -48,6 +50,35 @@ public class DemoDataService
     {
         var items = await CreateDemoItemsAsync();
         await CreateDemoOrdersAsync(items);
+        await _flagService.SetDemoDataLoadedAsync();
+    }
+
+    /// <summary>
+    /// Deletes all demo data (all items and orders)
+    /// </summary>
+    public async Task DeleteDemoDataAsync()
+    {
+        var allItems = await _itemStore.GetAllAsync();
+        foreach (var item in allItems)
+        {
+            await _itemStore.DeleteAsync(item.ItemID);
+        }
+
+        var allOrders = await _orderStore.GetAllAsync();
+        foreach (var order in allOrders)
+        {
+            await _orderStore.DeleteAsync(order.OrderID);
+        }
+
+        await _flagService.ClearDemoDataFlagAsync();
+    }
+
+    /// <summary>
+    /// Checks if demo data has been loaded
+    /// </summary>
+    public async Task<bool> IsDemoDataLoadedAsync()
+    {
+        return await _flagService.IsDemoDataLoadedAsync();
     }
 
     private async Task<List<Item>> CreateDemoItemsAsync()

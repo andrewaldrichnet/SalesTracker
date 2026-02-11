@@ -22,6 +22,33 @@
     }
 }
 
+
+#preload {
+    min-height: 100vh;
+    background: #eee;
+    color: #333;
+}
+
+    #preload .progress {
+        transition: all 0.5s;
+    }
+
+    #preload .progress-bar {
+        width: var(--blazor-load-percentage);
+        background-color: var(--primary-color);
+    }
+
+@media (prefers-color-scheme: dark) {
+    #preload {
+        background: #343434;
+        color: #ddd;
+    }
+}
+
+.main-content {
+    padding: 1.2rem 2rem;
+}
+
 .card {
     border: none;
 }
@@ -31,10 +58,20 @@
     border-color: var(--btn-hover-border-color);
 }
 
-
-.bg-secondary {
-    background: var(--primary-color-secondary) !important;
+.btn-outline-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
+
+    .btn-outline-primary:hover, .btn-outline-primary:focus {
+        background-color: var(--primary-color);
+        color: #fff;
+    }
+
+
+    .bg-secondary {
+        background: var(--primary-color-secondary) !important;
+    }
 
 .text-primary-light {
     color: var(--primary-color-light)
@@ -60,10 +97,6 @@ a, .btn-link {
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-.content {
-    padding-top: 1.1rem;
 }
 
 h1:focus {
@@ -155,3 +188,4 @@ h1:focus {
         right: 0.75rem;
         top: 0.5rem;
     }
+

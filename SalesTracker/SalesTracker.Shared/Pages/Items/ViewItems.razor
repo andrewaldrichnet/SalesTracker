@@ -4,66 +4,67 @@
 @inject NavigationManager Navigation
 
 <PageTitle>Items</PageTitle>
+<div class="main-content">
+    <div class="view-items-container">
+        <div class="sales-header d-md-flex justify-content-between mb-3 align-items-end">
+            <h2 class="fw-bolder m-0">Items</h2>
+            <a href="/items/setup" class="btn btn-primary btn-lg">
+                <PlusIcon CssClass="me-1" />
+                New Item
+            </a>
+        </div>
 
-<div class="view-items-container">
-    <div class="sales-header d-md-flex justify-content-between mb-3 align-items-end">
-        <h2 class="fw-bolder m-0">Items</h2>
-        <a href="/items/setup" class="btn btn-primary btn-lg">
-            <PlusIcon CssClass="me-1" />
-            New Item</a>
-    </div>
+        <div class="search-section">
+            <div class="search-box d-flex gap-3">
+                <InputText class="search-input form-control" placeholder="Search items..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+                <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
+                    <SearchIcon />
+                </button>
+            </div>
+        </div>
 
-    <div class="search-section">
-        <div class="search-box d-flex gap-3">
-            <InputText class="search-input form-control" placeholder="Search items..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
-            <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
-                <SearchIcon />
+        <div class="filter-tabs mt-3">
+            <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")"
+                    @onclick="() => SetFilter(FilterType.All)">
+                All Items
+            </button>
+            <button class="filter-pill @(CurrentFilter == FilterType.Backordered ? "active" : "")"
+                    @onclick="() => SetFilter(FilterType.Backordered)">
+                Back-ordered
+            </button>
+            <button class="filter-pill @(CurrentFilter == FilterType.InStock ? "active" : "")"
+                    @onclick="() => SetFilter(FilterType.InStock)">
+                Current Inventory
             </button>
         </div>
-    </div>
-
-    <div class="filter-tabs mt-3">
-        <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")"
-                @onclick="() => SetFilter(FilterType.All)">
-            All Items
-        </button>
-        <button class="filter-pill @(CurrentFilter == FilterType.Backordered ? "active" : "")"
-                @onclick="() => SetFilter(FilterType.Backordered)">
-            Back-ordered
-        </button>
-        <button class="filter-pill @(CurrentFilter == FilterType.InStock ? "active" : "")"
-                @onclick="() => SetFilter(FilterType.InStock)">
-            Current Inventory
-        </button>
-    </div>
 
 
 
-    @if (IsLoading)
-    {
+        @if (IsLoading)
+        {
         <p>Loading items...</p>
-    }
-    else if (!string.IsNullOrEmpty(ErrorMessage))
-    {
+        }
+        else if (!string.IsNullOrEmpty(ErrorMessage))
+        {
         <div class="alert alert-danger" role="alert">
             @ErrorMessage
         </div>
-    }
-    else if (Items.Count == 0)
-    {
+        }
+        else if (Items.Count == 0)
+        {
         <p>No items found. <a href="/items/setup">Create one now.</a></p>
-    }
-    else
-    {
+        }
+        else
+        {
         <div class="items-list">
             @foreach (var item in FilteredItems)
             {
-                <ItemRow Item="item" OnClick="HandleItemClick" />
+            <ItemRow Item="item" OnClick="HandleItemClick" />
             }
         </div>
-    }
+        }
+    </div>
 </div>
-
 <ConfirmationDialog @ref="ConfirmDialog" Title="Delete Item" Message="Are you sure you want to delete this item? This action cannot be undone." ConfirmText="Delete" CancelText="Cancel" />
 
 @code {

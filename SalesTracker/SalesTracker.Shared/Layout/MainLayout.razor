@@ -1,12 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
+<script src="_content/SalesTracker.Shared/js/theme.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+<script src="_content/SalesTracker.Shared/js/chart-init.js"></script>
+
+
 <div class="page">
     <div class="sidebar bg-body-tertiary">
         <NavMenu />
     </div>
 
     <main>
-        <article class="content px-4">
+        <article class="content">
             @Body
         </article>
     </main>

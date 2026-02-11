@@ -8,191 +8,192 @@
 
 <PageTitle>Order Details</PageTitle>
 
+<div class="main-content">
+    <div class="row mb-3">
+        <div class="col-lg-8 col-xl-9">
+            <div class="d-flex mb-3 align-items-center">
+                <ChevronLeftIcon CssClass="me-1" Width="24" Height="24" />
+                <a href="/sales/view" class="text-decoration-none fs-5">Sales</a>
+            </div>
 
-<div class="row mb-3">
-    <div class="col-lg-8 col-xl-9">
-        <div class="d-flex mb-3 align-items-center">
-            <ChevronLeftIcon CssClass="me-1" Width="24" Height="24" />
-            <a href="/sales/view" class="text-decoration-none fs-5">Sales</a>
-        </div>
-
-        @if (IsLoading)
-        {
+            @if (IsLoading)
+            {
             <p>Loading order details...</p>
-        }
-        else if (Order == null)
-        {
+            }
+            else if (Order == null)
+            {
             <div class="alert alert-warning" role="alert">
                 Order not found. <a href="/sales/view">Back to sales</a>
             </div>
-        }
-        else
-        {
+            }
+            else
+            {
             @if (!string.IsNullOrEmpty(ErrorMessage))
             {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @ErrorMessage
-                    <button type="button" class="btn-close" @onclick="() => ErrorMessage = string.Empty"></button>
-                </div>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @ErrorMessage
+                <button type="button" class="btn-close" @onclick="() => ErrorMessage = string.Empty"></button>
+            </div>
             }
             @if (!string.IsNullOrEmpty(StatusMessage))
             {
-                <div class="alert alert-primary alert-dismissible fade show" role="alert">
-                    @StatusMessage
-                    <button type="button" class="btn-close" @onclick="() => StatusMessage = string.Empty"></button>
-                </div>
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                @StatusMessage
+                <button type="button" class="btn-close" @onclick="() => StatusMessage = string.Empty"></button>
+            </div>
             }
 
-                <div class="d-flex flex-wrap gap-3">
-                    <h2 class="fw-bold">Order #@Order.OrderID</h2>
+            <div class="d-flex flex-wrap gap-3">
+                <h2 class="fw-bold">Order #@Order.OrderID</h2>
                 <div class="status-badges d-flex gap-3 align-items-center">
                     @if (Order.HasDelivered)
                     {
-                        <span class="badge bg-primary">Delivered</span>
+                    <span class="badge bg-primary">Delivered</span>
                     }
                     else
                     {
-                        <span class="badge bg-warning text-dark">Pending Delivery</span>
+                    <span class="badge bg-warning text-dark">Pending Delivery</span>
                     }
 
                     @if (Order.HasReceivedPayment)
                     {
-                        <span class="badge bg-primary">Paid</span>
+                    <span class="badge bg-primary">Paid</span>
                     }
                 </div>
-                    </div>
+            </div>
             <div class="fs-3">@Order.CustomerName</div>
             <div class="status-badges d-flex gap-3">
                 @if (!Order.HasDelivered) {
-                    <button class="btn btn-sm btn-primary" @onclick="MarkAsDelivered">Mark as Delivered</button>
+                <button class="btn btn-sm btn-primary" @onclick="MarkAsDelivered">Mark as Delivered</button>
                 }
 
                 @if (!Order.HasReceivedPayment) {
-                    <button class="btn btn-sm btn-primary" @onclick="MarkAsPaid">Mark as Paid</button>
+                <button class="btn btn-sm btn-primary" @onclick="MarkAsPaid">Mark as Paid</button>
                 }
             </div>
-        }
-    </div>
-    <div class="col-lg-4 col-xl-3">
-        <div class="d-flex flex-column gap-3 mt-3 mt-lg-0">
-            <div><a href="/sales/setup/@Order?.OrderID" class="btn btn-secondary w-100">Edit</a></div>
-            <div><button class="btn btn-secondary w-100" @onclick="HandleDelete">Delete</button></div>
-        </div>
-    </div>
-</div>
-@if (!IsLoading && Order != null)
-{
-    <div class="row mt-3">
-        <div class="col-lg-8 col-xl-9">
-            @if (Item == null)
-            {
-                <div>Item Deleted</div>
             }
-            else
-            {
-                <ItemDetailOverview Item="Item" SalePrice="Order.Price" />
-            }
-
-
-
-            <div class="order-details-section mt-5">
-                <h4 class="mb-2">Summary</h4>
-                <div class="order-summary">
-                    <div class="summary-row d-flex justify-content-between fs-5 px-3 py-1">
-                        <span>Quantity</span>
-                        <strong>@Order.Qty</strong>
-                    </div>
-                    <hr />
-                    <div class="summary-row d-flex justify-content-between fs-5 px-3 py-1">
-                        <span>Order Date</span>
-                        <strong>@Order.SellDate.ToString("MMM dd, yyyy")</strong>
-                    </div>
-                    <hr />
-                    <div class="summary-row d-flex justify-content-between fs-5 px-3 py-1">
-                        <span>Unit Price</span>
-                        <strong>@Order.Price.ToString("C2")</strong>
-                    </div>
-
-                    <div class="summary-row mt-2 total d-flex justify-content-between  bg-secondary-subtle rounded fs-5 px-3 py-3">
-                            <span class="fw-bold">Total</span>
-                            <strong>@((Order.Price * Order.Qty).ToString("C2"))</strong>
-                      
-                    </div>
-
-                    @{
-                        var profit = (Order.Price - Item?.Cost ?? 0) * Order.Qty;
-                    }
-                    <div class="summary-row d-flex justify-content-between mt-1 bg-opacity-25 text-body rounded fs-5 px-3 py-3   @(profit >= 0 ? "profit bg-primary" : "loss bg-danger")">
-                        <span class="fw-bold">Profit</span>
-                        <strong class="@(profit >= 0 ? "text-primary" : "text-danger")">@profit.ToString("C2")</strong>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="col-lg-4 col-xl-3">
-            <h5>History</h5>
-            <div class="timeline">
-                <div class="timeline-item completed">
-                    <div class="timeline-content ">
-                        <div><strong>Order Created</strong></div>
-                        <div class="text-muted">@Order.CreatedDate.ToString("MMM dd, yyyy H:mm")</div>
-                    </div>
-                </div>
-
-                @if (Order.HasReceivedPayment && Order.PaymentDate.HasValue)
-                {
-                    <div class="timeline-item completed">
-                        <div class="timeline-content">
-                            <div><strong>Payment Received</strong></div>
-                            <div class="text-muted">@Order.PaymentDate.Value.ToString("MMM dd, yyyy H:mm")</div>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="timeline-item pending">
-                        <div class="timeline-content">
-                            <div><strong>Awaiting Payment</strong></div>
-                        </div>
-                    </div>
-                }
-
-                @if (Order.HasDelivered && Order.DeliveryDate.HasValue)
-                {
-                    <div class="timeline-item completed">
-                        <div class="timeline-content">
-                            <div><strong>Delivered</strong></div>
-                            <div class="text-muted">@Order.DeliveryDate.Value.ToString("MMM dd, yyyy H:mm")</div>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="timeline-item pending">
-                        <div class="timeline-content">
-                            <div><strong>Awaiting Delivery</strong></div>
-                        </div>
-                    </div>
-                }
+            <div class="d-flex flex-column gap-3 mt-3 mt-lg-0">
+                <div><a href="/sales/setup/@Order?.OrderID" class="btn btn-secondary w-100">Edit</a></div>
+                <div><button class="btn btn-secondary w-100" @onclick="HandleDelete">Delete</button></div>
             </div>
         </div>
     </div>
+    @if (!IsLoading && Order != null)
+    {
+        <div class="row mt-3">
+            <div class="col-lg-8 col-xl-9">
+                @if (Item == null)
+                {
+                    <div>Item Deleted</div>
+                }
+                else
+                {
+                    <ItemDetailOverview Item="Item" SalePrice="Order.Price" />
+                }
 
-    <div class="mt-5 py-3 d-flex justify-content-center gap-3">
-        <div>
-            ID: @Order.ItemID
+
+
+                <div class="order-details-section mt-5">
+                    <h4 class="mb-2">Summary</h4>
+                    <div class="order-summary">
+                        <div class="summary-row d-flex justify-content-between fs-5 px-3 py-1">
+                            <span>Quantity</span>
+                            <strong>@Order.Qty</strong>
+                        </div>
+                        <hr />
+                        <div class="summary-row d-flex justify-content-between fs-5 px-3 py-1">
+                            <span>Order Date</span>
+                            <strong>@Order.SellDate.ToString("MMM dd, yyyy")</strong>
+                        </div>
+                        <hr />
+                        <div class="summary-row d-flex justify-content-between fs-5 px-3 py-1">
+                            <span>Unit Price</span>
+                            <strong>@Order.Price.ToString("C2")</strong>
+                        </div>
+
+                        <div class="summary-row mt-2 total d-flex justify-content-between  bg-secondary-subtle rounded fs-5 px-3 py-3">
+                            <span class="fw-bold">Total</span>
+                            <strong>@((Order.Price * Order.Qty).ToString("C2"))</strong>
+
+                        </div>
+
+                        @{
+                            var profit = (Order.Price - Item?.Cost ?? 0) * Order.Qty;
+                        }
+                        <div class="summary-row d-flex justify-content-between mt-1 bg-opacity-25 text-body rounded fs-5 px-3 py-3   @(profit >= 0 ? "profit bg-primary" : "loss bg-danger")">
+                            <span class="fw-bold">Profit</span>
+                            <strong class="@(profit >= 0 ? "text-primary" : "text-danger")">@profit.ToString("C2")</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-xl-3">
+                <h5>History</h5>
+                <div class="timeline">
+                    <div class="timeline-item completed">
+                        <div class="timeline-content ">
+                            <div><strong>Order Created</strong></div>
+                            <div class="text-muted">@Order.CreatedDate.ToString("MMM dd, yyyy H:mm")</div>
+                        </div>
+                    </div>
+
+                    @if (Order.HasReceivedPayment && Order.PaymentDate.HasValue)
+                    {
+                        <div class="timeline-item completed">
+                            <div class="timeline-content">
+                                <div><strong>Payment Received</strong></div>
+                                <div class="text-muted">@Order.PaymentDate.Value.ToString("MMM dd, yyyy H:mm")</div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="timeline-item pending">
+                            <div class="timeline-content">
+                                <div><strong>Awaiting Payment</strong></div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Order.HasDelivered && Order.DeliveryDate.HasValue)
+                    {
+                        <div class="timeline-item completed">
+                            <div class="timeline-content">
+                                <div><strong>Delivered</strong></div>
+                                <div class="text-muted">@Order.DeliveryDate.Value.ToString("MMM dd, yyyy H:mm")</div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="timeline-item pending">
+                            <div class="timeline-content">
+                                <div><strong>Awaiting Delivery</strong></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
-        <div>
-            Created: @Order.CreatedDate.ToString("MMM dd, yyyy")
+
+        <div class="mt-5 py-3 d-flex justify-content-center gap-3">
+            <div>
+                ID: @Order.ItemID
+            </div>
+            <div>
+                Created: @Order.CreatedDate.ToString("MMM dd, yyyy")
+            </div>
+            <div>
+                Modified: @Order.ModifiedDate.ToString("MMM dd, yyyy")
+            </div>
         </div>
-        <div>
-            Modified: @Order.ModifiedDate.ToString("MMM dd, yyyy")
-        </div>
-    </div>
 
 
-}
+    }
 
+</div>
 <ConfirmationDialog @ref="ConfirmDialog"
                     Title="Delete Order"
                     Message="Are you sure you want to delete this order? This action cannot be undone and will deallocate inventory."

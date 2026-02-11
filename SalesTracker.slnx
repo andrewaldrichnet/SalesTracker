@@ -3,6 +3,6 @@
   <Project Path="SalesTracker/SalesTracker.Web.Client/SalesTracker.Web.Client.csproj" />
   <Project Path="SalesTracker/SalesTracker.Web/SalesTracker.Web.csproj" />
   <Project Path="SalesTracker/SalesTracker/SalesTracker.csproj">
-    <Deploy Solution="Debug|*" />
+    <Deploy />
   </Project>
 </Solution>

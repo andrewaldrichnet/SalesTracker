@@ -3,147 +3,125 @@
 @inject OrderService OrderService
 @inject ItemService ItemService
 @inject DemoDataService DemoDataService
+@inject DemoDataFlagService DemoDataFlagService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
 <PageTitle>Dashboard</PageTitle>
-
-<div class="dashboard-container">
-<div class="dashboard-header d-flex justify-content-between">
-    <h1>Dashboard</h1>   
-</div>
-
-    @if (IsLoading)
-    {
-        <div class="loading-view d-flex flex-column justify-content-center align-items-center text-center m-auto" style="height: 400px">
-            <div><img src="_content/SalesTracker.Shared/images/Logo.png" alt="Sales Tracker" width="128" height="128" /></div>
-            <div><p class="text-muted mt-3">Loading dashboard data...</p></div>
+<div class="main-content">
+    <div class="dashboard-container">
+        <div class="dashboard-header d-flex justify-content-between">
+            <h1>Dashboard</h1>
         </div>
-    }
-    else if (!string.IsNullOrEmpty(ErrorMessage))
-    {
-        <div class="alert alert-danger" role="alert">
-            @ErrorMessage
-        </div>
-    }
-    else
-    {
-        <!-- Top Row: Sales Chart and New Sale Button + Metrics -->
-        <div class="row mb-3">
-            <div class="col-lg-6">
-                <div class="card bg-secondary-subtle shadow-xl"><div class="card-body"><canvas id="salesChart"></canvas></div></div>
+
+        @if (PageLoading)
+        {
+            <div class="loading-view d-flex flex-column justify-content-center align-items-center text-center m-auto" style="height: 400px">
+                <div><img src="_content/SalesTracker.Shared/images/Logo.png" alt="Sales Tracker" width="128" height="128" /></div>
+                <div><p class="text-muted mt-3">Loading dashboard data...</p></div>
             </div>
-
-            <div class="col-lg-6">
-                <a href="/sales/setup" class="btn btn-primary btn-lg new-sale-btn w-100">
-                    <PlusIcon />
-                    New Sale
-                </a>
-
-                <div class="metrics-row row mt-3">
-                    <div class="col-6">
-                        <div class="metric-card card bg-secondary-subtle me-1 rounded-3 shadow-xl">
-                            <div class="card-body py-4 my-3 d-flex">
-                                <div class="m-auto d-inline-block">
-                                    <div class="metric-header mb-1">
-                                        <span class="metric-change @(SalesPercentageChange >= 0 ? "positive text-success" : "negative text-danger")">
-                                            @if (SalesPercentageChange >= 0)
-                                            {
-                                                <ArrowUpIcon />
-                                            }
-                                            else
-                                            {
-                                                <ArrowDownIcon />
-                                            }
-                                            @Math.Abs(SalesPercentageChange).ToString("F1")%
-                                        </span>
+        }
+        else if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @ErrorMessage
+            </div>
+        }
+        else
+        {
+            <!-- Top Row: Sales Chart and New Sale Button + Metrics -->
+            <div class="row mb-3">
+                <div class="col-lg-6">
+                    <div class="card bg-secondary-subtle shadow-xl">
+                        <div class="card-body">
+                            @if (IsLoadingChart)
+                            {
+                                <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading chart...</span>
                                     </div>
-                                    <div class="metric-value fs-2 text-center fw-bold">@CurrentMonthSales.ToString("C0")</div>
-                                    <div class="metric-label fs-4 text-center">Sales</div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class=" col-6">
-                        <div class="metric-card card bg-secondary-subtle ms-1  rounded-3 shadow-xl">
-                                 <div class="card-body py-4 my-3 d-flex">
-                                 <div class="m-auto d-inline-block">
-                                    <div class="metric-header mb-1">
-                                        <span class="metric-change @(ProfitPercentageChange >= 0 ? "positive text-success" : "negative text-danger")">
-                                            @if (ProfitPercentageChange >= 0)
-                                            {
-                                                <ArrowUpIcon />
-                                            }
-                                            else
-                                            {
-                                                <ArrowDownIcon />
-                                            }
-                                            @Math.Abs(ProfitPercentageChange).ToString("F1")%
-                                        </span>
-                                    </div>
-                                    <div class="metric-value fs-2 text-center fw-bold">@CurrentMonthProfit.ToString("C0")</div>
-                                    <div class="metric-label fs-4 text-center">Profit</div>
-                                </div>
-                            </div>
+                            }
+                            else
+                            {
+                                <canvas id="salesChart"></canvas>
+                            }
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Second Row: Stats Cards and Backorders -->
-        <div class="row">
-            <div class="col-xl-6">
-                <div class="stats-container d-flex gap-3 mb-3">
-                    <div class="card bg-secondary-subtle shadow-sm flex-grow-1">
-                        <div class="card-body">
-                            <div class="d-flex flex-column gap-3">
-                                <div>
-                                    <div class="bg-primary text-white rounded p-3 d-inline-block">
-                                        <div class="stat-icon pending text-center">
-                                            <TruckIcon Width="24" Height="24" />
+                <div class="col-lg-6">
+                    <a href="/sales/setup" class="btn btn-primary btn-lg new-sale-btn w-100 mt-3 mt-lg-0">
+                        <PlusIcon />
+                        New Sale
+                    </a>
+
+                    <div class="metrics-row row mt-3">
+                        <div class="col-6">
+                            <div class="metric-card card bg-secondary-subtle me-1 rounded-3 shadow-xl">
+                                <div class="card-body py-4 my-3 d-flex">
+                                    @if (IsLoadingSalesMetrics)
+                                    {
+                                        <div class="m-auto d-inline-block w-100">
+                                            <div class="placeholder-glow">
+                                                <span class="placeholder w-50 rounded-1" style="height:108px"></span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="stat-content">
-                                    <div class="stat-title fs-6 fw-bold">Pending Deliveries</div>
-                                    <div class="stat-number fs-1">@PendingDeliveries</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="m-auto d-inline-block">
+                                            <div class="metric-header mb-1">
+                                                <span class="metric-change @(SalesPercentageChange >= 0 ? "positive text-success" : "negative text-danger")">
+                                                    @if (SalesPercentageChange >= 0)
+                                                    {
+                                                        <ArrowUpIcon />
+                                                    }
+                                                    else
+                                                    {
+                                                        <ArrowDownIcon />
+                                                    }
+                                                    @Math.Abs(SalesPercentageChange).ToString("F1")%
+                                                </span>
+                                            </div>
+                                            <div class="metric-value fs-2 text-center fw-bold">@CurrentMonthSales.ToString("C0")</div>
+                                            <div class="metric-label fs-4 text-center">Sales</div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="card bg-secondary-subtle shadow-xl flex-grow-1">
-                        <div class="card-body">
-                            <div class="d-flex flex-column gap-3">
-                                <div>
-                                    <div class="bg-primary text-white rounded p-3 d-inline-block">
-                                        <div class="stat-icon pending text-center">
-                                            <BoxIcon Width="24" Height="24" />
+                        <div class=" col-6">
+                            <div class="metric-card card bg-secondary-subtle ms-1  rounded-3 shadow-xl">
+                                <div class="card-body py-4 my-3 d-flex">
+                                    @if (IsLoadingProfitMetrics)
+                                    {
+                                        <div class="m-auto d-inline-block w-100">
+                                            <div class="placeholder-glow">
+                                                <span class="placeholder w-50 rounded-1" style="height: 108px;"></span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="stat-content">
-                                    <div class="stat-title fs-6 fw-bold"># of Items</div>
-                                    <div class="stat-number fs-1">@TotalItems</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card bg-secondary-subtle shadow-xl flex-grow-1">
-                        <div class="card-body">
-                            <div class="d-flex flex-column gap-3">
-                                <div>
-                                    <div class="bg-primary text-white rounded p-3 d-inline-block">
-                                        <div class="stat-icon pending text-center">
-                                            <CartIcon Width="24" Height="24" />
+                                    }
+                                    else
+                                    {
+                                        <div class="m-auto d-inline-block">
+                                            <div class="metric-header mb-1">
+                                                <span class="metric-change @(ProfitPercentageChange >= 0 ? "positive text-success" : "negative text-danger")">
+                                                    @if (ProfitPercentageChange >= 0)
+                                                    {
+                                                        <ArrowUpIcon />
+                                                    }
+                                                    else
+                                                    {
+                                                        <ArrowDownIcon />
+                                                    }
+                                                    @Math.Abs(ProfitPercentageChange).ToString("F1")%
+                                                </span>
+                                            </div>
+                                            <div class="metric-value fs-2 text-center fw-bold">@CurrentMonthProfit.ToString("C0")</div>
+                                            <div class="metric-label fs-4 text-center">Profit</div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="stat-content">
-                                    <div class="stat-title fs-6 fw-bold">Orders This Month</div>
-                                    <div class="stat-number fs-1">@OrdersThisMonth</div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -151,53 +129,197 @@
                 </div>
             </div>
 
-            <div class="col-xl-6">
-                <div>
-                    <div class="d-flex justify-content-between">
-                            <h5>Back-orders</h5>
-                            <span class="qty-label">Qty Needed</span>
-                        </div>
-                    <div>
-                        @if (BackorderedItems.Count == 0)
-                        {
-                            <p class="no-data">No back-orders at this time.</p>
-                        }
-                        else
-                        {
-                            <div class="backorder-list">
-                                @foreach (var (item, qtyNeeded) in BackorderedItems)
+            <!-- Second Row: Stats Cards and Backorders -->
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="stats-container d-flex gap-3 mb-3">
+                        <div class="card bg-secondary-subtle shadow-sm flex-grow-1">
+                            <div class="card-body">
+                                @if (IsLoadingOperationalMetrics)
                                 {
-                                    <div class="backorder-item d-flex gap-3 align-items-center mb-3">
-                                        <div class="item-image me-1">
-                                            <ItemImageDisplay Image="item.Images?.FirstOrDefault()" AltText="item.Name" />
+                                    <div class="d-flex flex-column gap-3">
+                                        <div>
+                                            <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                                <div class="stat-icon pending text-center">
+                                                    <TruckIcon Width="24" Height="24" />
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="item-details">
-                                            <span class="item-name">@item.Name</span>
+                                        <div class="stat-content placeholder-glow">
+                                            <div class="placeholder w-75 rounded-1 mb-2 d-block"></div>
+                                            <div class="placeholder w-100 rounded-1"></div>
                                         </div>
-                                        <div class="flex-grow-1"></div>
-                                        <div class="item-qty">
-                                            <span class="badge bg-body-tertiary text-body p-2">@qtyNeeded</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex flex-column gap-3">
+                                        <div>
+                                            <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                                <div class="stat-icon pending text-center">
+                                                    <TruckIcon Width="24" Height="24" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-title fs-6 fw-bold">Pending Deliveries</div>
+                                            <div class="stat-number fs-1">@PendingDeliveries</div>
                                         </div>
                                     </div>
                                 }
                             </div>
-                        }
+                        </div>
+
+                        <div class="card bg-secondary-subtle shadow-xl flex-grow-1">
+                            <div class="card-body">
+                                @if (IsLoadingOperationalMetrics)
+                                {
+                                    <div class="d-flex flex-column gap-3">
+                                        <div>
+                                            <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                                <div class="stat-icon pending text-center">
+                                                    <BoxIcon Width="24" Height="24" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="stat-content placeholder-glow">
+                                            <div class="placeholder w-75 rounded-1 mb-2 d-block"></div>
+                                            <div class="placeholder w-100 rounded-1"></div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex flex-column gap-3">
+                                        <div>
+                                            <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                                <div class="stat-icon pending text-center">
+                                                    <BoxIcon Width="24" Height="24" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-title fs-6 fw-bold"># of Items</div>
+                                            <div class="stat-number fs-1">@TotalItems</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card bg-secondary-subtle shadow-xl flex-grow-1">
+                            <div class="card-body">
+                                @if (IsLoadingOperationalMetrics)
+                                {
+                                    <div class="d-flex flex-column gap-3">
+                                        <div>
+                                            <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                                <div class="stat-icon pending text-center">
+                                                    <CartIcon Width="24" Height="24" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="stat-content placeholder-glow">
+                                            <div class="placeholder w-75 rounded-1 mb-2 d-block"></div>
+                                            <div class="placeholder w-100 rounded-1"></div>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex flex-column gap-3">
+                                        <div>
+                                            <div class="bg-primary text-white rounded p-3 d-inline-block">
+                                                <div class="stat-icon pending text-center">
+                                                    <CartIcon Width="24" Height="24" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-title fs-6 fw-bold">Orders This Month</div>
+                                            <div class="stat-number fs-1">@OrdersThisMonth</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-6">
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <h5>Back-orders</h5>
+                            <span class="qty-label">Qty Needed</span>
+                        </div>
+                        <div>
+                            @if (IsLoadingBackorders)
+                            {
+                                <div class="placeholder-glow">
+                                    <span class="placeholder w-100 rounded-1 mb-3 d-block"></span>
+                                    <span class="placeholder w-100 rounded-1 mb-3 d-block"></span>
+                                    <span class="placeholder w-100 rounded-1 d-block"></span>
+                                </div>
+                            }
+                            else if (BackorderedItems.Count == 0)
+                            {
+                                <p class="no-data">No back-orders at this time.</p>
+                            }
+                            else
+                            {
+                                <div class="backorder-list">
+                                    @foreach (var (item, qtyNeeded) in BackorderedItems)
+                                    {
+                                        <div class="backorder-item d-flex gap-3 align-items-center mb-3">
+                                            <div class="item-image me-1">
+                                                <ItemImageDisplay Image="item.Images?.FirstOrDefault()" AltText="item.Name" />
+                                            </div>
+                                            <div class="item-details">
+                                                <span class="item-name">@item.Name</span>
+                                            </div>
+                                            <div class="flex-grow-1"></div>
+                                            <div class="item-qty">
+                                                <span class="badge bg-body-tertiary text-body p-2">@qtyNeeded</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="mt-5">
-            
-        <button class="btn btn-secondary" @onclick="CreateDemoData" title="Create Demo Data">
-            Create Demo Data
-        </button>
+            <div class="mt-5">
+                @if (IsDemoDataLoaded)
+                {
+                    <button class="btn btn-danger ms-2" @onclick="DeleteDemoData" title="Delete all demo data and start fresh">
+                        Delete Demo Data & Reset
+                    </button>
+                }
+            </div>
+        }
+    </div>
 </div>
+
+
+<script>
+    const hasVisitedBefore = localStorage.getItem('hasVisitedDashboard');
+
+    if (!hasVisitedBefore) {
+        localStorage.setItem('hasVisitedDashboard', 'true');
+        window.location.href = '/welcome';
     }
-</div>
+</script>
 
 @code {
-    private bool IsLoading = true;
+    private bool IsDemoDataLoaded = false;
+    private bool PageLoading = true;
+    private bool IsLoadingSalesMetrics = true;
+    private bool IsLoadingProfitMetrics = true;
+    private bool IsLoadingOperationalMetrics = true;
+    private bool IsLoadingBackorders = true;
+    private bool IsLoadingChart = true;
     private string ErrorMessage = string.Empty;
     private bool renderedChart = false;
 
@@ -216,27 +338,35 @@
     {
         try
         {
-            // Load all dashboard data in parallel
-            await Task.WhenAll(
+            var allTasks = new Task[] {
                 LoadSalesMetrics(),
                 LoadProfitMetrics(),
                 LoadOperationalMetrics(),
                 LoadBackorderedItems(),
                 LoadDailySalesData()
+    };
+
+            await Task.WhenAny(allTasks);
+            PageLoading = false;
+
+            // Load all dashboard data in parallel
+            await Task.WhenAll(
+            allTasks
             );
 
-            IsLoading = false;
+
+            IsDemoDataLoaded = await DemoDataService.IsDemoDataLoadedAsync();
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Failed to load dashboard: {ex.Message}";
-            IsLoading = false;
+            PageLoading = false;
         }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!renderedChart && !IsLoading && DailySalesData.Count > 0)
+        if (!renderedChart && !IsLoadingChart && DailySalesData.Count > 0)
         {
             await RenderSalesChart();
         }
@@ -244,60 +374,140 @@
 
     private async Task LoadSalesMetrics()
     {
-        CurrentMonthSales = await DashboardService.GetCurrentMonthSalesAsync();
-        SalesPercentageChange = await DashboardService.GetMonthlySalesPercentageChangeAsync();
+        try
+        {
+
+            var currentMonth = await DashboardService.GetCurrentMonthSalesAsync();
+            var previousMonth = await DashboardService.GetPreviousMonthSalesAsync();
+            decimal currentMonthPercentChange = 0;
+            if (previousMonth == 0)
+                currentMonthPercentChange = currentMonth > 0 ? 100 : 0;
+            else
+                currentMonthPercentChange = ((currentMonth - previousMonth) / previousMonth) * 100;
+
+            CurrentMonthSales = currentMonth;
+            SalesPercentageChange = currentMonthPercentChange;
+        }
+        finally
+        {
+            IsLoadingSalesMetrics = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task LoadProfitMetrics()
     {
-        CurrentMonthProfit = await DashboardService.GetCurrentMonthNetProfitAsync();
-        ProfitPercentageChange = await DashboardService.GetMonthlyProfitPercentageChangeAsync();
+        try
+        {
+            CurrentMonthProfit = await DashboardService.GetCurrentMonthNetProfitAsync();
+
+            var previousMonth = await DashboardService.GetPreviousMonthNetProfitAsync();
+
+            decimal profitChange = 0;
+            if (previousMonth == 0)
+                profitChange = CurrentMonthProfit > 0 ? 100 : 0;
+            else
+                profitChange = ((CurrentMonthProfit - previousMonth) / previousMonth) * 100;
+
+            ProfitPercentageChange = profitChange;
+        }
+        finally
+        {
+            IsLoadingProfitMetrics = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task LoadOperationalMetrics()
     {
-        PendingDeliveries = await DashboardService.GetPendingDeliveriesCountAsync();
-        OrdersThisMonth = await DashboardService.GetOrdersCountForCurrentMonthAsync();
+        try
+        {
+            PendingDeliveries = await DashboardService.GetPendingDeliveriesCountAsync();
+            OrdersThisMonth = await DashboardService.GetOrdersCountForCurrentMonthAsync();
 
-        var items = await ItemService.GetAllItemsAsync();
-        TotalItems = items.Count;
+            var items = await ItemService.GetAllItemsAsync();
+            TotalItems = items.Count;
+        }
+        finally
+        {
+            IsLoadingOperationalMetrics = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task LoadBackorderedItems()
     {
-        BackorderedItems = await DashboardService.GetBackorderedItemsAsync();
+        try
+        {
+            BackorderedItems = await DashboardService.GetBackorderedItemsAsync();
+        }
+        finally
+        {
+            IsLoadingBackorders = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task LoadDailySalesData()
     {
-        DailySalesData = await DashboardService.GetDailySalesForCurrentMonthAsync();
-    }
-
-
-    private async Task CreateDemoData()
-    {
         try
         {
-            IsLoading = true;
-            ErrorMessage = string.Empty;
-
-            await DemoDataService.CreateDemoDataAsync();
-
-            // Reload the dashboard data
-            await Task.WhenAll(
-                LoadSalesMetrics(),
-                LoadProfitMetrics(),
-                LoadOperationalMetrics(),
-                LoadBackorderedItems(),
-                LoadDailySalesData()
-            );
-
-            IsLoading = false;
+            DailySalesData = await DashboardService.GetDailySalesForCurrentMonthAsync();
         }
-        catch (Exception ex)
+        finally
         {
-            ErrorMessage = $"Failed to create demo data: {ex.Message}";
-            IsLoading = false;
+            PageLoading = false;
+            IsLoadingChart = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task DeleteDemoData()
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete all demo data and start fresh? This cannot be undone.");
+
+        if (confirmed)
+        {
+            try
+            {
+                PageLoading = true;
+                IsLoadingSalesMetrics = true;
+                IsLoadingProfitMetrics = true;
+                IsLoadingOperationalMetrics = true;
+                IsLoadingBackorders = true;
+                IsLoadingChart = true;
+                ErrorMessage = string.Empty;
+
+                await DemoDataService.DeleteDemoDataAsync();
+
+                // Reset all metrics
+                CurrentMonthSales = 0m;
+                CurrentMonthProfit = 0m;
+                SalesPercentageChange = 0m;
+                ProfitPercentageChange = 0m;
+                PendingDeliveries = 0;
+                TotalItems = 0;
+                OrdersThisMonth = 0;
+                BackorderedItems.Clear();
+                DailySalesData.Clear();
+                renderedChart = false;
+
+                PageLoading = false;
+
+                // Reload all data
+                await Task.WhenAll(
+                    LoadSalesMetrics(),
+                    LoadProfitMetrics(),
+                    LoadOperationalMetrics(),
+                    LoadBackorderedItems(),
+                    LoadDailySalesData()
+                );
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Failed to delete demo data: {ex.Message}";
+                PageLoading = false;
+            }
         }
     }
 
@@ -316,18 +526,18 @@
         {
             Console.WriteLine("[Dashboard] About to call renderSalesChart");
             Console.WriteLine($"[Dashboard] Canvas ID: salesChart, Labels: {labels.Count}, Sales data: {sales.Count}");
-            
+
             // Check if function exists
             var funcExists = await JS.InvokeAsync<bool>("eval", "typeof renderSalesChart !== 'undefined'");
             Console.WriteLine($"[Dashboard] renderSalesChart function exists: {funcExists}");
-            
+
             if (!funcExists)
             {
                 Console.WriteLine("[Dashboard] ERROR: renderSalesChart function not found!");
                 ErrorMessage = "Chart library failed to load";
                 return;
             }
-            
+
             await JS.InvokeVoidAsync("renderSalesChart", "salesChart", labels, sales.Select(s => (double)s).ToList());
             Console.WriteLine("[Dashboard] renderSalesChart invoked successfully");
         }

@@ -1,0 +1,122 @@
+﻿:root {
+    --primary-color: #4EB036;
+}
+
+h1:focus {
+    outline: none!important;
+}
+
+.home {
+    background: linear-gradient(180deg, #0d0f10, #111314);
+    color: #fff;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    font-size: 1.5rem;
+}
+
+.text-muted {
+    color: #ddd !important;
+}
+
+.accent {
+    color: #4EB036;
+}
+
+.btn-accent {
+    background-color: #4EB036;
+    color: #000;
+    font-weight: 600;
+}
+
+    .btn-accent:hover {
+        background-color: #4be03a;
+    }
+
+.hero-title {
+    font-family: Georgia, serif;
+    font-size: clamp(4rem, 8vw, 8rem);
+}
+
+.section-title {
+    font-family: Georgia, serif;
+    font-size: clamp(3rem, 4vw, 5rem);
+}
+
+.section-title-big {
+    font-family: Georgia, serif;
+    font-size: clamp(5rem, 7vw, 5.6rem);
+}
+
+.feature-card {
+    background: transparent;
+    border: none;
+}
+
+.check-list i {
+    color: #4EB036;
+    font-size: 1.4rem;
+    margin-right: .75rem;
+}
+
+
+.footer-cta {
+    padding: 5rem 0;
+}
+
+
+.typing {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 4px solid currentColor; /* cursor */
+    width: 0;
+    animation: typing 1.2s steps(12, end) forwards, blink 1s step-end infinite;
+}
+
+/* Text reveal */
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 12ch
+    }
+    /* match character count */
+}
+
+/* Cursor blink */
+@keyframes blink {
+    50% {
+        border-color: transparent;
+    }
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+    .reveal.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+
+
+.btn-accent, .btn-dark {
+    transition: all 0.3s ease;
+}
+
+    .btn-accent:hover, .btn-dark:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 123, 255, 0.35);
+    }

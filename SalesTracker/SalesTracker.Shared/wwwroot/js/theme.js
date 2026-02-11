@@ -1,16 +1,13 @@
+console.log('theme-js loaded');
+
 // Theme initialization script for Bootstrap dark mode support
-function initializeTheme() {
+window.initializeTheme = function () {
+    console.log('init theme');
     const preferredTheme = getPreferredTheme();
     setTheme(preferredTheme);
 }
 
 function getPreferredTheme() {
-    // Check if user has a saved preference in localStorage
-    const savedTheme = localStorage.getItem('data-bs-theme');
-    if (savedTheme) {
-        return savedTheme;
-    }
-
     // Check the system preference
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         return 'dark';
@@ -23,7 +20,6 @@ function getPreferredTheme() {
 function setTheme(theme) {
     const html = document.documentElement;
     html.setAttribute('data-bs-theme', theme);
-    localStorage.setItem('data-bs-theme', theme);
 }
 
 function toggleTheme() {
@@ -32,16 +28,24 @@ function toggleTheme() {
     setTheme(newTheme);
 }
 
-// Listen for system theme changes and update accordingly
-if (window.matchMedia) {
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    darkModeQuery.addEventListener('change', (e) => {
-        // Only update if user hasn't set a manual preference
-        if (!localStorage.getItem('data-bs-theme')) {
-            setTheme(e.matches ? 'dark' : 'light');
-        }
-    });
-}
-
 // Initialize theme on script load
-initializeTheme();
+window.initializeTheme();
+
+document.onreadystatechange = function () {
+    if (document.readyState == "interactive") {
+        window.initializeTheme();
+        setTimeout(function () {
+            window.initializeTheme();
+        });
+    }
+
+
+    // Listen for system theme changes and update accordingly
+    if (window.matchMedia) {
+        const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        darkModeQuery.addEventListener('change', (e) => {
+            setTheme(e.matches ? 'dark' : 'light');
+        });
+    }
+
+}

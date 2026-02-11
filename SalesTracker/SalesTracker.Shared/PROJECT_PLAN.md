@@ -446,3 +446,20 @@ When adding cloud sync later, the architecture remains the same:
 
 ### Phase 4: Search and Filtering
 - Implement search and filter capabilities for orders and items
+
+### Phase 5: Implement Better On Boarding
+- On first launch, show a welcome screen with option to load sample data or start fresh
+- Track demo data with a flag in local storage/SQLite to allow users to easily reset if they want to start over
+- Add Images to sample data for better demonstration. I can upload some images to the repo just let me know what to add and the file names
+- Add a button to delete all demo data and start fresh if they used the demo data and want to start over
+
+### TODO
+Store Cost on Sales when sale is created.
+Update profit calcuation to use that field instead.
+Update searches to allow keydown to trigger search. Allow clear field to trigger search as well.
+
+
+### Package exe
+- allow download from website
+
+

@@ -15,8 +15,6 @@
         <ResourcePreloader />
         <link rel="stylesheet" href="_content/SalesTracker.Shared/lib/bootstrap/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="SalesTracker.Web.styles.css" />
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
-        <script src="_content/SalesTracker.Shared/js/chart-init.js"></script>
         <ImportMap />
         <link rel="icon" type="image/png" href="_content/SalesTracker.Shared/favicon.png" />
         <HeadOutlet  />
@@ -45,13 +43,20 @@ else
         <link rel="stylesheet" href="SalesTracker.Web.styles.css" />
         <ImportMap />
         <link rel="icon" type="image/png" href="_content/SalesTracker.Shared/favicon.png" />
-        <script src="_content/SalesTracker.Shared/js/theme.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
-        <script src="_content/SalesTracker.Shared/js/chart-init.js"></script>
         <HeadOutlet @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
     </head>
 
     <body>
+        <div id="preload">
+            <div class="progress w-100 mb-5" role="progressbar" style="height: 3px;">
+                <div class="progress-bar"></div>
+            </div>
+
+            <div class="d-flex flex-column h-100 align-items-center justify-content-center py-5 text-center">
+                <img src="_content/SalesTracker.Shared/images/Logo.png" width="150" height="150" />
+                <div class="fs-5">Launching App...</div>
+            </div>
+        </div>
         <Routes @rendermode="@(new InteractiveWebAssemblyRenderMode(false))" />
         <script src="_content/SalesTracker.Web.Client/js/image-resizer.js"></script>
         <script src="@Assets["_framework/blazor.web.js"]"></script>
