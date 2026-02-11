@@ -100,17 +100,27 @@ export async function getAll(dbName, version, storeName) {
     const db = await openDatabase(dbName, version, storeName);
     
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName], 'readonly');
-        const store = transaction.objectStore(storeName);
-        const request = store.getAll();
+        try {
+            const transaction = db.transaction([storeName], 'readonly');
+            const store = transaction.objectStore(storeName);
+            const request = store.getAll();
 
-        request.onerror = () => {
-            reject(new Error(`Failed to retrieve data: ${request.error}`));
-        };
+            request.onerror = () => {
+                const errorMsg = request.error?.message || String(request.error);
+                reject(new Error(`Failed to retrieve data from ${storeName}: ${errorMsg}`));
+            };
 
-        request.onsuccess = () => {
-            resolve(JSON.stringify(request.result || []));
-        };
+            request.onsuccess = () => {
+                resolve(JSON.stringify(request.result || []));
+            };
+            
+            transaction.onerror = () => {
+                const errorMsg = transaction.error?.message || String(transaction.error);
+                reject(new Error(`Transaction failed for getAll on ${storeName}: ${errorMsg}`));
+            };
+        } catch (e) {
+            reject(new Error(`Exception during getAll: ${e.message}`));
+        }
     });
 }
 
@@ -150,7 +160,13 @@ export async function getById(dbName, version, storeName, id) {
  */
 export async function add(dbName, version, storeName, jsonData) {
     const db = await openDatabase(dbName, version, storeName);
-    const data = JSON.parse(jsonData);
+    let data;
+    
+    try {
+        data = JSON.parse(jsonData);
+    } catch (e) {
+        throw new Error(`Failed to parse JSON data: ${e.message}`);
+    }
     
     // Determine the key path for this store
     const keyPath = storeName.charAt(0).toUpperCase() + storeName.slice(1) + 'ID';
@@ -162,17 +178,31 @@ export async function add(dbName, version, storeName, jsonData) {
     }
     
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName], 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.add(data);
+        try {
+            const transaction = db.transaction([storeName], 'readwrite');
+            const store = transaction.objectStore(storeName);
+            const request = store.add(data);
 
-        request.onerror = () => {
-            reject(new Error(`Failed to add record: ${request.error}`));
-        };
+            request.onerror = () => {
+                const errorMsg = request.error?.message || String(request.error);
+                console.error(`[IndexedDB Add Error] Store: ${storeName}, Error: ${errorMsg}`, data);
+                reject(new Error(`Failed to add record to ${storeName}: ${errorMsg}`));
+            };
 
-        request.onsuccess = () => {
-            resolve(request.result);
-        };
+            request.onsuccess = () => {
+                console.log(`[IndexedDB Add Success] Store: ${storeName}, Key: ${request.result}`);
+                resolve(request.result);
+            };
+            
+            transaction.onerror = () => {
+                const errorMsg = transaction.error?.message || String(transaction.error);
+                console.error(`[IndexedDB Transaction Error] Store: ${storeName}, Error: ${errorMsg}`);
+                reject(new Error(`Transaction failed for ${storeName}: ${errorMsg}`));
+            };
+        } catch (e) {
+            console.error(`[IndexedDB Add Exception] Store: ${storeName}, Error: ${e.message}`);
+            reject(new Error(`Exception during add operation: ${e.message}`));
+        }
     });
 }
 
@@ -186,20 +216,36 @@ export async function add(dbName, version, storeName, jsonData) {
  */
 export async function update(dbName, version, storeName, jsonData) {
     const db = await openDatabase(dbName, version, storeName);
-    const data = JSON.parse(jsonData);
+    let data;
+    
+    try {
+        data = JSON.parse(jsonData);
+    } catch (e) {
+        throw new Error(`Failed to parse JSON data: ${e.message}`);
+    }
     
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName], 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.put(data);
+        try {
+            const transaction = db.transaction([storeName], 'readwrite');
+            const store = transaction.objectStore(storeName);
+            const request = store.put(data);
 
-        request.onerror = () => {
-            reject(new Error(`Failed to update record: ${request.error}`));
-        };
+            request.onerror = () => {
+                const errorMsg = request.error?.message || String(request.error);
+                reject(new Error(`Failed to update record in ${storeName}: ${errorMsg}`));
+            };
 
-        request.onsuccess = () => {
-            resolve(request.result);
-        };
+            request.onsuccess = () => {
+                resolve(request.result);
+            };
+            
+            transaction.onerror = () => {
+                const errorMsg = transaction.error?.message || String(transaction.error);
+                reject(new Error(`Transaction failed for update on ${storeName}: ${errorMsg}`));
+            };
+        } catch (e) {
+            reject(new Error(`Exception during update: ${e.message}`));
+        }
     });
 }
 
@@ -215,17 +261,27 @@ export async function deleteRecord(dbName, version, storeName, id) {
     const db = await openDatabase(dbName, version, storeName);
     
     return new Promise((resolve, reject) => {
-        const transaction = db.transaction([storeName], 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.delete(id);
+        try {
+            const transaction = db.transaction([storeName], 'readwrite');
+            const store = transaction.objectStore(storeName);
+            const request = store.delete(id);
 
-        request.onerror = () => {
-            reject(new Error(`Failed to delete record: ${request.error}`));
-        };
+            request.onerror = () => {
+                const errorMsg = request.error?.message || String(request.error);
+                reject(new Error(`Failed to delete record from ${storeName}: ${errorMsg}`));
+            };
 
-        request.onsuccess = () => {
-            resolve();
-        };
+            request.onsuccess = () => {
+                resolve();
+            };
+            
+            transaction.onerror = () => {
+                const errorMsg = transaction.error?.message || String(transaction.error);
+                reject(new Error(`Transaction failed for delete on ${storeName}: ${errorMsg}`));
+            };
+        } catch (e) {
+            reject(new Error(`Exception during delete: ${e.message}`));
+        }
     });
 }
 

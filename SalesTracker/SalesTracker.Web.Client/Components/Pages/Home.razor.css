@@ -33,7 +33,7 @@ h1:focus {
 
 .hero-title {
     font-family: Georgia, serif;
-    font-size: clamp(4rem, 8vw, 8rem);
+    font-size: clamp(3rem, 8vw, 8rem);
 }
 
 .section-title {

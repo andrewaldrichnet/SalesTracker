@@ -10,7 +10,7 @@
 
 <div class="main-content">
     <div class="row mb-3">
-        <div class="col-lg-8 col-xl-9">
+        <div class="col-12 col-lg-8 col-xl-9">
             <div class="d-flex mb-3 align-items-center">
                 <ChevronLeftIcon CssClass="me-1" Width="24" Height="24" />
                 <a href="/sales/view" class="text-decoration-none fs-5">Sales</a>
@@ -73,7 +73,7 @@
             </div>
             }
         </div>
-        <div class="col-lg-4 col-xl-3">
+        <div class="col-12 col-lg-4 col-xl-3">
             <div class="d-flex flex-column gap-3 mt-3 mt-lg-0">
                 <div><a href="/sales/setup/@Order?.OrderID" class="btn btn-secondary w-100">Edit</a></div>
                 <div><button class="btn btn-secondary w-100" @onclick="HandleDelete">Delete</button></div>
@@ -83,7 +83,7 @@
     @if (!IsLoading && Order != null)
     {
         <div class="row mt-3">
-            <div class="col-lg-8 col-xl-9">
+            <div class="col-12 col-lg-8 col-xl-9">
                 @if (Item == null)
                 {
                     <div>Item Deleted</div>
@@ -129,7 +129,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-xl-3">
+            <div class="col-12 col-lg-4 col-xl-3">
                 <h5>History</h5>
                 <div class="timeline">
                     <div class="timeline-item completed">

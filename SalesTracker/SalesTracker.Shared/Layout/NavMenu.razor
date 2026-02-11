@@ -1,14 +1,18 @@
-﻿<div class="top-row ps-3 navbar bg-body-secondary">
-    <div class="container-fluid">
+﻿<div class="top-row px-3 navbar bg-body-secondary">
+    <div class="w-100 d-flex justify-content-between">
         <a class="navbar-brand" href="/dashboard">
             <img src="_content/SalesTracker.Shared/images/LogoFull.png" alt="Sales Tracker" class="mw-100" />
         </a>
+        <div class="d-flex h-100 flex-column">
+            <button class="navbar-toggler" id="nav-toggle" type="button" @onclick="ToggleNavMenu" aria-controls="navMenu" aria-expanded="@isNavOpen.ToString().ToLower()" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" @ref="navToggle" />
 
-<div class="nav-scrollable" @onclick="CloseNavMenu">
+<div class="nav-scrollable collapse @(isNavOpen ? "show" : "")" id="navMenu" @onclick="CloseNavMenu">
     <nav class="nav flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link text-body" href="/dashboard" Match="NavLinkMatch.All">
@@ -29,15 +33,19 @@
     </nav>
 </div>
 
-@code {
-    private ElementReference navToggle;
+@inject IJSRuntime JS
 
-    private async Task CloseNavMenu()
+@code {
+    private bool isNavOpen = false;
+
+    private void ToggleNavMenu()
     {
-        if (navToggle.Context != null)
-        {
-            await navToggle.FocusAsync();
-        }
+        isNavOpen = !isNavOpen;
+    }
+
+    private void CloseNavMenu()
+    {
+        isNavOpen = false;
     }
 }
 

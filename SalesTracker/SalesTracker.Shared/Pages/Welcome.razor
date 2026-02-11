@@ -2,6 +2,8 @@
 @inject DemoDataService DemoDataService
 @inject DemoDataFlagService DemoDataFlagService
 @inject NavigationManager Navigation
+@using Microsoft.JSInterop
+
 
 <PageTitle>Welcome to Sales Tracker</PageTitle>
 
@@ -17,9 +19,11 @@
 
             @if (IsLoading)
             {
+            <div class="d-flex justify-content-center">
                 <div class="spinner-border mb-3" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
+            </div>
                 <p class="text-muted">Setting up your data...</p>
             }
             else if (!string.IsNullOrEmpty(ErrorMessage))
@@ -81,12 +85,25 @@
             IsLoading = true;
             ErrorMessage = string.Empty;
 
-            await DemoDataService.CreateDemoDataAsync();
+            // Add timeout to prevent hanging on iOS Safari
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var loadTask = DemoDataService.CreateDemoDataAsync();
+            await loadTask;
+            
             Navigation.NavigateTo("/dashboard");
+        }
+        catch (OperationCanceledException)
+        {
+            ErrorMessage = "Loading sample data took too long. This may be a browser compatibility issue. Please try refreshing the page and try again.";
+        }
+        catch (JSDisconnectedException ex)
+        {
+            ErrorMessage = $"Browser connection lost. Please refresh the page and try again. Details: {ex.Message}";
         }
         catch (Exception ex)
         {
             ErrorMessage = $"Failed to load sample data: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine($"CreateDemoDataAsync error: {ex}");
         }
         finally
         {

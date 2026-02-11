@@ -64,10 +64,16 @@ public class IndexedDbDataStore<T> : IDataStore<T> where T : class
     {
         await EnsureDbInitializedAsync();
         
-        var json = JsonSerializer.Serialize(entity);
-        var result = await _module!.InvokeAsync<int>("add", _databaseName, _databaseVersion, _storeName, json);
-        
-        return result;
+        try
+        {
+            var json = JsonSerializer.Serialize(entity);
+            var result = await _module!.InvokeAsync<int>("add", _databaseName, _databaseVersion, _storeName, json);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Failed to add {typeof(T).Name} to IndexedDB. This may be a browser compatibility issue.", ex);
+        }
     }
 
     public async Task UpdateAsync(T entity)
@@ -80,7 +86,7 @@ public class IndexedDbDataStore<T> : IDataStore<T> where T : class
     public async Task DeleteAsync(int id)
     {
         await EnsureDbInitializedAsync();
-        await _module!.InvokeAsync<object?>("delete", _databaseName, _databaseVersion, _storeName, id);
+        await _module!.InvokeAsync<object?>("deleteRecord", _databaseName, _databaseVersion, _storeName, id);
     }
 
     public async Task<List<T>> QueryAsync(Expression<Func<T, bool>> predicate)
