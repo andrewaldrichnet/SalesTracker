@@ -2,34 +2,44 @@
 
 console.log('[Chart Init] chart-init.js script loaded');
 
-window.renderSalesChart = function(canvasId, labels, salesData) {
-    console.log('[Chart Init] Starting renderSalesChart with canvasId:', canvasId);
-    console.log('[Chart Init] Labels count:', labels ? labels.length : 'null');
-    console.log('[Chart Init] Sales data count:', salesData ? salesData.length : 'null');
-    console.log('[Chart Init] Sales data sample:', salesData ? salesData.slice(0, 3) : 'null');
+window.renderSalesChart = function(canvasId, labels, salesData, retryCount = 0) {
+console.log('[Chart Init] Starting renderSalesChart with canvasId:', canvasId);
+console.log('[Chart Init] Labels count:', labels ? labels.length : 'null');
+console.log('[Chart Init] Sales data count:', salesData ? salesData.length : 'null');
+console.log('[Chart Init] Sales data sample:', salesData ? salesData.slice(0, 3) : 'null');
     
-    window.chartCanvasId = canvasId;
-    window.chartLabels = labels;
-    window.chartSalesData = salesData;
+window.chartCanvasId = canvasId;
+window.chartLabels = labels;
+window.chartSalesData = salesData;
     
-    const ctx = document.getElementById(canvasId);
-    if (!ctx) {
-        console.error('[Chart Init] Canvas element not found:', canvasId);
-        console.log('[Chart Init] Available canvas elements:', document.querySelectorAll('canvas').length);
-        document.querySelectorAll('canvas').forEach((el, idx) => {
-            console.log(`  Canvas ${idx}: id="${el.id}", class="${el.className}"`);
-        });
-        return;
-    }
+const ctx = document.getElementById(canvasId);
+if (!ctx) {
+    console.error('[Chart Init] Canvas element not found:', canvasId);
+    console.log('[Chart Init] Available canvas elements:', document.querySelectorAll('canvas').length);
+    document.querySelectorAll('canvas').forEach((el, idx) => {
+        console.log(`  Canvas ${idx}: id="${el.id}", class="${el.className}"`);
+    });
+    return;
+}
     
-    console.log('[Chart Init] Canvas element found:', ctx);
+console.log('[Chart Init] Canvas element found:', ctx);
 
-    // Check if Chart.js is available
-    if (typeof Chart === 'undefined') {
-        console.error('[Chart Init] Chart.js library is not loaded. Please add Chart.js to your HTML.');
-        console.log('[Chart Init] Window keys containing "chart":', Object.keys(window).filter(k => k.toLowerCase().includes('chart')));
-        return;
+// Check if Chart.js is available
+if (typeof Chart === 'undefined') {
+    console.error('[Chart Init] Chart.js library is not loaded. Please add Chart.js to your HTML.');
+    console.log('[Chart Init] Window keys containing "chart":', Object.keys(window).filter(k => k.toLowerCase().includes('chart')));
+        
+    // Retry after a couple of milliseconds
+    if (retryCount < 3) {
+        console.log(`[Chart Init] Retrying in 2ms... (attempt ${retryCount + 1}/3)`);
+        setTimeout(() => {
+            window.renderSalesChart(canvasId, labels, salesData, retryCount + 1);
+        }, 2);
+    } else {
+        console.error('[Chart Init] Failed to load Chart.js after 3 retries');
     }
+    return;
+}
 
     console.log('[Chart Init] Chart.js is available. Version:', Chart.version || 'unknown');
 
