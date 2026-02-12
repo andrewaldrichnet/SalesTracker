@@ -113,7 +113,7 @@
             <div class="col-md-7">
                 <h2 class="section-title mb-4 text-md-end">Start Tracking<br>Sales the Easy Way</h2>
                 <div class="d-flex justify-content-center justify-content-md-end gap-3 flex-wrap">
-                    <a class="btn btn-dark px-4 py-3" href="https://github.com/andrewaldrichnet/SalesTracker/blob/master/SalesTracker/WindowsBuild/windowsalestracker.msix?raw=true" rel="nofollow">
+                    <a class="btn btn-dark px-4 py-3" href="#download" rel="nofollow">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-windows me-2" viewBox="0 0 16 16">
                             <path d="M6.555 1.375 0 2.237v5.45h6.555zM0 13.795l6.555.933V8.313H0zm7.278-5.4.026 6.378L16 16V8.395zM16 0 7.33 1.244v6.414H16z" />
                         </svg>
@@ -142,7 +142,14 @@
     }, { threshold: 0.15 });
 
     function initRevealObserver() {
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+            // Check if element is already in viewport on page load
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                el.classList.add('show');
+            }
+        });
     }
 
     if (document.readyState === "loading") {
