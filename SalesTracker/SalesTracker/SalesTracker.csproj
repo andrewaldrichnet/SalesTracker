@@ -44,7 +44,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
-    <AppInstallerUri>https://salestracker.acstudiolabs.com/files/windowssalestracker.msix</AppInstallerUri>
+    <AppInstallerUri>https://github.com/andrewaldrichnet/SalesTracker/blob/master/SalesTracker/WindowsBuild/windowsalestracker.msix%3fraw=true</AppInstallerUri>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
 
