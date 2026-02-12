@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/WindowsBuild/">
+    <File Path="../../../Downloads/windowsalestracker.msix" />
+  </Folder>
   <Project Path="SalesTracker/SalesTracker.Shared/SalesTracker.Shared.csproj" />
   <Project Path="SalesTracker/SalesTracker.Web.Client/SalesTracker.Web.Client.csproj" />
   <Project Path="SalesTracker/SalesTracker.Web/SalesTracker.Web.csproj" />
