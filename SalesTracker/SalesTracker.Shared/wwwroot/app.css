@@ -162,11 +162,12 @@ h1:focus {
 
     .filter-pill:hover {
         color: #fff;
+        background-color: var(--primary-color, #1b6ec2);
     }
 
     .filter-pill.active {
         background-color: var(--primary-color, #1b6ec2);
-        color: #fff;
+        color: #fff !important;
     }
 
 
@@ -189,3 +190,10 @@ h1:focus {
         top: 0.5rem;
     }
 
+
+
+@media (max-width: 768px) {
+    .navbar-brand img {
+        width: 98px;
+    }
+}

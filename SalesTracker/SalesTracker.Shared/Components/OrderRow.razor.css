@@ -96,6 +96,7 @@
         align-items: flex-start;
         gap: 0.75rem;
         padding: 0.75rem;
+        position: relative;
     }
 
     .order-row-image {
@@ -135,6 +136,9 @@
     .order-row-arrow {
         align-self: flex-end;
         margin-top: -2.5rem;
+        position: absolute;
+        margin-top: auto;
+        margin-bottom: auto;
     }
 }
 

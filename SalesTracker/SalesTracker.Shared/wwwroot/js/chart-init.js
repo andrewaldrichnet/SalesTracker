@@ -44,12 +44,16 @@ window.renderSalesChart = function(canvasId, labels, salesData) {
     if (!window.chartResizeListenerAttached) {
         console.log('[Chart Init] Setting up resize listener');
         window.chartResizeListenerAttached = true;
+        window.chartLastWidth = window.innerWidth;
         window.addEventListener('resize', function() {
             clearTimeout(window.chartResizeTimeout);
             window.chartResizeTimeout = setTimeout(function() {
                 if (window.mysalesChart && window.chartCanvasId && window.chartLabels && window.chartSalesData) {
-                    console.log('[Chart Init] Redrawing chart on window resize');
-                    window.renderSalesChart(chartCanvasId, chartLabels, window.chartSalesData);
+                    const currentWidth = window.innerWidth;
+                    if (currentWidth !== window.chartLastWidth) {
+                        window.chartLastWidth = currentWidth;
+                        window.renderSalesChart(chartCanvasId, chartLabels, window.chartSalesData);
+                    }
                 }
             }, 250);
         });

@@ -7,7 +7,7 @@
 <div class="main-content">
     <div class="view-sales-container">
         <div class="sales-header d-md-flex justify-content-between mb-3 align-items-end">
-            <h2 class="fw-bolder m-0">Sales</h2>
+            <h2 class="fw-bolder m-0 mb-3 mb-lg-0">Sales</h2>
             <a href="/sales/setup" class="btn btn-primary btn-lg">
                 <PlusIcon CssClass="me-1" />New Sale
             </a>
@@ -15,7 +15,7 @@
 
         <div class="search-section">
             <div class="search-box d-flex gap-3">
-                <InputText class="search-input form-control" placeholder="Search by customer name..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+                <InputText class="search-input form-control" placeholder="Search by customer name..." ValueExpression="@(() => SearchTerm)" @oninput="OnInputAsync" @onkeydown="OnKeydownAsync" />
                 <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
                     <SearchIcon />
                 </button>
@@ -23,15 +23,15 @@
         </div>
 
         <div class="filter-tabs mt-3">
-            <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")"
+            <button class="filter-pill text-body @(CurrentFilter == FilterType.All ? "active" : "")"
                     @onclick="() => SetFilter(FilterType.All)">
                 All Sales
             </button>
-            <button class="filter-pill @(CurrentFilter == FilterType.PendingDelivery ? "active" : "")"
+            <button class="filter-pill text-body @(CurrentFilter == FilterType.PendingDelivery ? "active" : "")"
                     @onclick="() => SetFilter(FilterType.PendingDelivery)">
                 Pending Delivery
             </button>
-            <button class="filter-pill @(CurrentFilter == FilterType.Unpaid ? "active" : "")"
+            <button class="filter-pill text-body @(CurrentFilter == FilterType.Unpaid ? "active" : "")"
                     @onclick="() => SetFilter(FilterType.Unpaid)">
                 Unpaid
             </button>
@@ -111,7 +111,7 @@
             ErrorMessage = string.Empty;
             AllOrders = await OrderService.GetAllOrdersAsync();
             Orders = AllOrders.OrderByDescending(o => o.SellDate).ToList();
-            
+
             // Load items
             Items = await ItemService.GetAllItemsAsync();
         }
@@ -135,6 +135,24 @@
         {
             Orders = await OrderService.SearchByCustomerAsync(SearchTerm);
             Orders = Orders.OrderByDescending(o => o.SellDate).ToList();
+        }
+    }
+
+    private async Task OnInputAsync(ChangeEventArgs e)
+    {
+        SearchTerm = e.Value?.ToString() ?? string.Empty;
+        //await HandleSearch();
+        if (string.IsNullOrEmpty(SearchTerm))
+        {
+            await HandleSearch();
+        }
+    }
+
+    private async Task OnKeydownAsync(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await HandleSearch();
         }
     }
 

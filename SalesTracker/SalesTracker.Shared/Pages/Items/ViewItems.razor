@@ -7,7 +7,7 @@
 <div class="main-content">
     <div class="view-items-container">
         <div class="sales-header d-md-flex justify-content-between mb-3 align-items-end">
-            <h2 class="fw-bolder m-0">Items</h2>
+            <h2 class="fw-bolder m-0 mb-3 mb-lg-0">Items</h2>
             <a href="/items/setup" class="btn btn-primary btn-lg">
                 <PlusIcon CssClass="me-1" />
                 New Item
@@ -16,7 +16,7 @@
 
         <div class="search-section">
             <div class="search-box d-flex gap-3">
-                <InputText class="search-input form-control" placeholder="Search items..." @bind-Value="SearchTerm" @onchange="HandleSearch" />
+                <InputText class="search-input form-control" placeholder="Search items..." ValueExpression="@(() => SearchTerm)" @oninput="OnInputAsync" @onkeydown="OnKeydownAsync" />
                 <button class="btn btn-primary search-btn" @onclick="HandleSearch" title="Search">
                     <SearchIcon />
                 </button>
@@ -24,15 +24,15 @@
         </div>
 
         <div class="filter-tabs mt-3">
-            <button class="filter-pill @(CurrentFilter == FilterType.All ? "active" : "")"
+            <button class="filter-pill text-body @(CurrentFilter == FilterType.All ? "active" : "")"
                     @onclick="() => SetFilter(FilterType.All)">
                 All Items
             </button>
-            <button class="filter-pill @(CurrentFilter == FilterType.Backordered ? "active" : "")"
+            <button class="filter-pill text-body @(CurrentFilter == FilterType.Backordered ? "active" : "")"
                     @onclick="() => SetFilter(FilterType.Backordered)">
                 Back-ordered
             </button>
-            <button class="filter-pill @(CurrentFilter == FilterType.InStock ? "active" : "")"
+            <button class="filter-pill text-body @(CurrentFilter == FilterType.InStock ? "active" : "")"
                     @onclick="() => SetFilter(FilterType.InStock)">
                 Current Inventory
             </button>
@@ -131,6 +131,25 @@
         else
         {
             Items = await ItemService.SearchItemsAsync(SearchTerm);
+        }
+    }
+
+    private async Task OnInputAsync(ChangeEventArgs e)
+    {
+        SearchTerm = e.Value?.ToString() ?? string.Empty;
+        //await HandleSearch();
+
+        if (string.IsNullOrEmpty(SearchTerm))
+        {
+            await HandleSearch();
+        }
+    }
+
+    private async Task OnKeydownAsync(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await HandleSearch();
         }
     }
 
