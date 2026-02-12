@@ -10,13 +10,13 @@
   "theme_color": "#4EB036",
   "icons": [
     {
-      "src": "_content/SalesTracker.Shared/Logo.png",
+      "src": "_content/SalesTracker.Shared/images/Logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "_content/SalesTracker.Shared/Logo.png",
+      "src": "_content/SalesTracker.Shared/images/Logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
