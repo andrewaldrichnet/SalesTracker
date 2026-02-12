@@ -5,7 +5,7 @@ Write-Host "Starting publish process..." -ForegroundColor Green
 
 # Publish the Blazor WebAssembly project
 Write-Host "Running dotnet publish..." -ForegroundColor Yellow
-dotnet publish -c Release
+dotnet publish -c Release -o ./bin/Release/net10.0/browser-wasm/publish/
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Publish failed!" -ForegroundColor Red
